@@ -983,7 +983,7 @@
       <button class="view-tab" type="button" data-view="overview">综合总览</button>
       <button class="view-tab" type="button" data-view="urbanization">城镇化率</button>
       <button class="view-tab" type="button" data-view="gdp">人均GDP</button>
-      <button class="view-tab" type="button" data-view="inflow">省外流入</button>
+      <button class="view-tab" type="button" data-view="inflow">净流入率</button>
     </nav>
 
     <main class="layout dashboard-view" id="baselineView">
@@ -1305,37 +1305,37 @@
     ];
 
     const provinceIndicators = [
-      { province: "北京", urbanizationRate: 87.83, gdpPerCapita: 200278, externalInflowShare: 36.1 },
-      { province: "天津", urbanizationRate: 85.49, gdpPerCapita: 122752, externalInflowShare: 18.8 },
-      { province: "河北", urbanizationRate: 62.77, gdpPerCapita: 59332, externalInflowShare: 0 },
-      { province: "山西", urbanizationRate: 64.97, gdpPerCapita: 73984, externalInflowShare: 0 },
-      { province: "内蒙古", urbanizationRate: 69.58, gdpPerCapita: 102677, externalInflowShare: 0 },
-      { province: "辽宁", urbanizationRate: 73.51, gdpPerCapita: 72107, externalInflowShare: 2.2 },
-      { province: "吉林", urbanizationRate: 64.73, gdpPerCapita: 57739, externalInflowShare: 0 },
-      { province: "黑龙江", urbanizationRate: 67.11, gdpPerCapita: 51563, externalInflowShare: 0 },
-      { province: "上海", urbanizationRate: 89.46, gdpPerCapita: 190321, externalInflowShare: 39.5 },
-      { province: "江苏", urbanizationRate: 75.04, gdpPerCapita: 150487, externalInflowShare: 7.1 },
-      { province: "浙江", urbanizationRate: 74.23, gdpPerCapita: 125043, externalInflowShare: 21.6 },
-      { province: "安徽", urbanizationRate: 61.51, gdpPerCapita: 76830, externalInflowShare: 0 },
-      { province: "福建", urbanizationRate: 71.04, gdpPerCapita: 129865, externalInflowShare: 5.8 },
-      { province: "江西", urbanizationRate: 63.13, gdpPerCapita: 71216, externalInflowShare: 0 },
-      { province: "山东", urbanizationRate: 65.53, gdpPerCapita: 90771, externalInflowShare: 0 },
-      { province: "河南", urbanizationRate: 58.08, gdpPerCapita: 60073, externalInflowShare: 0 },
-      { province: "湖北", urbanizationRate: 65.47, gdpPerCapita: 95538, externalInflowShare: 0 },
-      { province: "湖南", urbanizationRate: 61.16, gdpPerCapita: 75938, externalInflowShare: 0 },
-      { province: "广东", urbanizationRate: 75.42, gdpPerCapita: 106985, externalInflowShare: 22.2 },
-      { province: "广西", urbanizationRate: 56.78, gdpPerCapita: 54005, externalInflowShare: 0 },
-      { province: "海南", urbanizationRate: 62.46, gdpPerCapita: 72958, externalInflowShare: 5.4 },
-      { province: "重庆", urbanizationRate: 71.67, gdpPerCapita: 94147, externalInflowShare: 0 },
-      { province: "四川", urbanizationRate: 59.49, gdpPerCapita: 71835, externalInflowShare: 0 },
-      { province: "贵州", urbanizationRate: 55.94, gdpPerCapita: 54172, externalInflowShare: 0 },
-      { province: "云南", urbanizationRate: 52.92, gdpPerCapita: 64107, externalInflowShare: 0 },
-      { province: "西藏", urbanizationRate: 38.88, gdpPerCapita: 65642, externalInflowShare: 7.0 },
-      { province: "陕西", urbanizationRate: 65.16, gdpPerCapita: 85448, externalInflowShare: 0 },
-      { province: "甘肃", urbanizationRate: 55.49, gdpPerCapita: 47867, externalInflowShare: 0 },
-      { province: "青海", urbanizationRate: 62.80, gdpPerCapita: 63903, externalInflowShare: 0 },
-      { province: "宁夏", urbanizationRate: 67.31, gdpPerCapita: 72957, externalInflowShare: 4.0 },
-      { province: "新疆", urbanizationRate: 59.24, gdpPerCapita: 73774, externalInflowShare: 11.3 }
+      { province: "北京", urbanizationRate: 87.83, gdpPerCapita: 200278, registeredPopulation2020: 13990000 },
+      { province: "天津", urbanizationRate: 85.49, gdpPerCapita: 122752, registeredPopulation2020: 11260000 },
+      { province: "河北", urbanizationRate: 62.77, gdpPerCapita: 59332, registeredPopulation2020: 74200000 },
+      { province: "山西", urbanizationRate: 64.97, gdpPerCapita: 73984, registeredPopulation2020: 34103500 },
+      { province: "内蒙古", urbanizationRate: 69.58, gdpPerCapita: 102677, registeredPopulation2020: 24028200 },
+      { province: "辽宁", urbanizationRate: 73.51, gdpPerCapita: 72107, registeredPopulation2020: 41650000 },
+      { province: "吉林", urbanizationRate: 64.73, gdpPerCapita: 57739, registeredPopulation2020: 26563000 },
+      { province: "黑龙江", urbanizationRate: 67.11, gdpPerCapita: 51563, registeredPopulation2020: 36456000 },
+      { province: "上海", urbanizationRate: 89.46, gdpPerCapita: 190321, registeredPopulation2020: 14757000 },
+      { province: "江苏", urbanizationRate: 75.04, gdpPerCapita: 150487, registeredPopulation2020: 78767500 },
+      { province: "浙江", urbanizationRate: 74.23, gdpPerCapita: 125043, registeredPopulation2020: 50689900 },
+      { province: "安徽", urbanizationRate: 61.51, gdpPerCapita: 76830, registeredPopulation2020: 71328026 },
+      { province: "福建", urbanizationRate: 71.04, gdpPerCapita: 129865, registeredPopulation2020: 39216100 },
+      { province: "江西", urbanizationRate: 63.13, gdpPerCapita: 71216, registeredPopulation2020: 46655000 },
+      { province: "山东", urbanizationRate: 65.53, gdpPerCapita: 90771, registeredPopulation2020: 101724667 },
+      { province: "河南", urbanizationRate: 58.08, gdpPerCapita: 60073, registeredPopulation2020: 115219300 },
+      { province: "湖北", urbanizationRate: 65.47, gdpPerCapita: 95538, registeredPopulation2020: 60160000 },
+      { province: "湖南", urbanizationRate: 61.16, gdpPerCapita: 75938, registeredPopulation2020: 73007000 },
+      { province: "广东", urbanizationRate: 75.42, gdpPerCapita: 106985, registeredPopulation2020: 98086569 },
+      { province: "广西", urbanizationRate: 56.78, gdpPerCapita: 54005, registeredPopulation2020: 56846400 },
+      { province: "海南", urbanizationRate: 62.46, gdpPerCapita: 72958, registeredPopulation2020: 9540000 },
+      { province: "重庆", urbanizationRate: 71.67, gdpPerCapita: 94147, registeredPopulation2020: 34124500 },
+      { province: "四川", urbanizationRate: 59.49, gdpPerCapita: 71835, registeredPopulation2020: 90675400 },
+      { province: "贵州", urbanizationRate: 55.94, gdpPerCapita: 54172, registeredPopulation2020: 44852600 },
+      { province: "云南", urbanizationRate: 52.92, gdpPerCapita: 64107, registeredPopulation2020: 48580000 },
+      { province: "西藏", urbanizationRate: 38.88, gdpPerCapita: 65642, registeredPopulation2020: 3392700 },
+      { province: "陕西", urbanizationRate: 65.16, gdpPerCapita: 85448, registeredPopulation2020: 39714300 },
+      { province: "甘肃", urbanizationRate: 55.49, gdpPerCapita: 47867, registeredPopulation2020: 26489700 },
+      { province: "青海", urbanizationRate: 62.80, gdpPerCapita: 63903, registeredPopulation2020: 5950000 },
+      { province: "宁夏", urbanizationRate: 67.31, gdpPerCapita: 72957, registeredPopulation2020: 6914000 },
+      { province: "新疆", urbanizationRate: 59.24, gdpPerCapita: 73774, registeredPopulation2020: 22930000 }
     ];
 
     const indicatorDefinitions = {
@@ -1360,14 +1360,15 @@
         note: "人均GDP采用国家统计局《中国统计年鉴2024》2023年分省人均地区生产总值，和七普人口基准年份不一致，页面只做探索性相关。"
       },
       inflow: {
-        key: "externalInflowShare",
-        label: "省外流入代理",
-        shortLabel: "省外流入",
+        key: "netInflowShare",
+        label: "净流入率",
+        shortLabel: "净流动",
         unit: "%",
         year: "2020",
-        sourceLabel: "七普常住人口 + 2020年末户籍人口正差代理",
+        signed: true,
+        sourceLabel: "2020常住人口 + 2020年末户籍人口计算",
         sourceUrl: "https://www.stats.gov.cn/sj/zxfb/202302/t20230203_1901083.html",
-        note: "默认外来人口变量用各省常住人口减户籍人口的正差占常住人口比例近似，能保守识别净流入压力，但不是完整的“户口登记地在外省人口”。若拿到七普省外户口原表，可直接替换该列。"
+        note: "净流入率 = (2020常住人口 - 2020年末户籍人口) / 2020常住人口。正值表示净流入，负值表示净流出；它不是完整的“户口登记地在外省人口占比”。正值不等于全部外省流入人口，负值也不等于没有外省流入人口。若后续取得七普“户口登记地在外省人口”分省原表，可另增真正的外省户籍人口占比。"
       }
     };
 
@@ -1547,7 +1548,10 @@
           populationRank: sortedByPopulation.findIndex((entry) => entry.name === item.name) + 1,
           urbanizationRate: Number(indicator.urbanizationRate),
           gdpPerCapita: Number(indicator.gdpPerCapita),
-          externalInflowShare: Number(indicator.externalInflowShare)
+          registeredPopulation2020: Number(indicator.registeredPopulation2020),
+          netInflowShare: Number.isFinite(Number(indicator.registeredPopulation2020))
+            ? (item.population - Number(indicator.registeredPopulation2020)) / item.population * 100
+            : NaN
         };
       });
       const sortedByComments = [...rowsBase].sort((a, b) => b.comments - a.comments || b.population - a.population);
@@ -1703,7 +1707,14 @@
     function formatIndicatorValue(definition, value, digits = 1) {
       if (!Number.isFinite(value)) return "N/A";
       if (definition.key === "gdpPerCapita") return `${numberFormatter.format(Math.round(value))}元`;
+      if (definition.signed) return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}%`;
       return `${value.toFixed(digits)}%`;
+    }
+
+    function formatFlowDirection(value) {
+      if (!Number.isFinite(value)) return "N/A";
+      if (Math.abs(value) < 0.05) return "基本持平";
+      return value > 0 ? "净流入" : "净流出";
     }
 
     function formatRelativeDeviation(value, digits = 1) {
@@ -2188,13 +2199,14 @@
       const indicatorReady = rows.every((row) =>
         Number.isFinite(row.urbanizationRate) &&
         Number.isFinite(row.gdpPerCapita) &&
-        Number.isFinite(row.externalInflowShare)
+        Number.isFinite(row.registeredPopulation2020) &&
+        Number.isFinite(row.netInflowShare)
       );
       const items = [
         { ok: currentNames.size === 31, text: `省份匹配：${currentNames.size}/31 个省级行政区有输入记录。未输入省份会按 0 评论处理。` },
         { ok: Math.abs(populationShareSum - 100) < 0.02, text: `人口占比合计：${populationShareSum.toFixed(4)}%。` },
         { ok: stats.totalComments === 0 || Math.abs(commentShareSum - 100) < 0.02, text: `评论占比合计：${commentShareSum.toFixed(4)}%。` },
-        { ok: indicatorReady, text: `省级解释变量：${indicatorReady ? "31/31" : rows.filter((row) => Number.isFinite(row.urbanizationRate) && Number.isFinite(row.gdpPerCapita) && Number.isFinite(row.externalInflowShare)).length + "/31"} 个省份具备城镇化率、人均GDP、省外流入代理。` },
+        { ok: indicatorReady, text: `省级解释变量：${indicatorReady ? "31/31" : rows.filter((row) => Number.isFinite(row.urbanizationRate) && Number.isFinite(row.gdpPerCapita) && Number.isFinite(row.registeredPopulation2020) && Number.isFinite(row.netInflowShare)).length + "/31"} 个省份具备城镇化率、人均GDP、户籍人口和净流入率。` },
         { ok: stats.totalComments >= 300, text: stats.totalComments >= 300 ? "样本量达到 300 条以上，可展示相关性和卡方检验。" : "样本量低于 300 条，仅建议查看描述统计。" },
         { ok: true, text: "IP属地只代表平台显示的网络访问属地，不等于户籍、省内真实居住人口或真实身份。" }
       ];
@@ -2298,7 +2310,8 @@
             <th>人口占比</th>
             <th>城镇化率</th>
             <th>人均GDP</th>
-            <th>省外流入代理</th>
+            <th>户籍人口</th>
+            <th>净流入率</th>
           </tr>
         </thead>
         <tbody>
@@ -2311,7 +2324,8 @@
               <td>${formatPercent(row.populationShare, 2)}</td>
               <td>${formatIndicatorValue(indicatorDefinitions.urbanization, row.urbanizationRate)}</td>
               <td>${formatIndicatorValue(indicatorDefinitions.gdp, row.gdpPerCapita)}</td>
-              <td>${formatIndicatorValue(indicatorDefinitions.inflow, row.externalInflowShare)}</td>
+              <td>${formatWan(row.registeredPopulation2020)}</td>
+              <td>${formatIndicatorValue(indicatorDefinitions.inflow, row.netInflowShare)}</td>
             </tr>
           `).join("")}
         </tbody>
@@ -2374,6 +2388,9 @@
         svg.appendChild(createSvgElement("line", { x1: margin.left, y1: y, x2: margin.left + width, y2: y, class: "grid-line" }));
       }
       svg.appendChild(createSvgElement("line", { x1: margin.left, y1: scaleY(0), x2: margin.left + width, y2: scaleY(0), class: "zero-line" }));
+      if (domainX[0] < 0 && domainX[1] > 0) {
+        svg.appendChild(createSvgElement("line", { x1: scaleX(0), y1: margin.top, x2: scaleX(0), y2: margin.top + height, class: "zero-line" }));
+      }
       svg.appendChild(createSvgElement("line", { x1: margin.left, y1: margin.top + height, x2: margin.left + width, y2: margin.top + height, class: "axis" }));
       svg.appendChild(createSvgElement("line", { x1: margin.left, y1: margin.top, x2: margin.left, y2: margin.top + height, class: "axis" }));
 
@@ -2425,6 +2442,11 @@
       const xMaxText = createSvgElement("text", { x: margin.left + width, y: 480, "text-anchor": "end", class: "chart-muted" });
       xMaxText.textContent = formatIndicatorValue(definition, maxX);
       svg.appendChild(xMaxText);
+      if (definition.signed) {
+        const xMinText = createSvgElement("text", { x: margin.left, y: 480, "text-anchor": "start", class: "chart-muted" });
+        xMinText.textContent = formatIndicatorValue(definition, minX);
+        svg.appendChild(xMinText);
+      }
       const yMaxText = createSvgElement("text", { x: margin.left - 10, y: margin.top + 4, "text-anchor": "end", class: "chart-muted" });
       yMaxText.textContent = `${maxY.toFixed(0)}%`;
       svg.appendChild(yMaxText);
@@ -2438,8 +2460,29 @@
       const margin = { left: 88, right: 92, top: 36, bottom: 40 };
       const width = 760 - margin.left - margin.right;
       const rowHeight = 24;
-      const maxValue = Math.max(1, ...sorted.map((row) => row[definition.key]));
-      const scale = (value) => (value / maxValue) * width;
+      const values = sorted.map((row) => row[definition.key]);
+      const maxValue = Math.max(1, ...values);
+      const maxAbsValue = Math.max(1, ...values.map((value) => Math.abs(value)));
+      const zeroX = definition.signed ? margin.left + width / 2 : margin.left;
+      const scale = (value) => definition.signed
+        ? zeroX + (value / maxAbsValue) * (width / 2)
+        : margin.left + (value / maxValue) * width;
+
+      if (definition.signed) {
+        svg.appendChild(createSvgElement("line", {
+          x1: zeroX,
+          y1: margin.top - 8,
+          x2: zeroX,
+          y2: margin.top + sorted.length * rowHeight + 8,
+          class: "zero-line"
+        }));
+        [-maxAbsValue, 0, maxAbsValue].forEach((value) => {
+          const x = scale(value);
+          const tick = createSvgElement("text", { x, y: 22, "text-anchor": "middle", class: "chart-muted" });
+          tick.textContent = formatIndicatorValue(definition, value);
+          svg.appendChild(tick);
+        });
+      }
 
       sorted.forEach((row, i) => {
         const y = margin.top + i * rowHeight;
@@ -2447,26 +2490,40 @@
         label.textContent = row.short;
         svg.appendChild(label);
 
+        const valueX = scale(row[definition.key]);
+        const barX = definition.signed ? Math.min(zeroX, valueX) : margin.left;
+        const barWidth = definition.signed ? Math.abs(valueX - zeroX) : Math.max(2, valueX - margin.left);
         const bar = createSvgElement("rect", {
-          x: margin.left,
+          x: barX.toFixed(2),
           y: y + 4,
-          width: Math.max(2, scale(row[definition.key])).toFixed(2),
+          width: Math.max(2, barWidth).toFixed(2),
           height: 14,
           rx: 0,
-          fill: row.relativeDeviation >= 0 ? "var(--good)" : "var(--bad)",
+          fill: definition.signed
+            ? (row[definition.key] >= 0 ? "var(--good)" : "var(--bad)")
+            : (row.relativeDeviation >= 0 ? "var(--good)" : "var(--bad)"),
           class: "bar-segment",
           "data-idx": row.index
         });
         attachInteractiveHandlers(bar, row);
         svg.appendChild(bar);
 
-        const value = createSvgElement("text", { x: margin.left + scale(row[definition.key]) + 8, y: y + 16, class: "chart-muted" });
+        const value = createSvgElement("text", {
+          x: definition.signed
+            ? (row[definition.key] >= 0 ? valueX + 8 : valueX - 8)
+            : valueX + 8,
+          y: y + 16,
+          "text-anchor": definition.signed && row[definition.key] < 0 ? "end" : "start",
+          class: "chart-muted"
+        });
         value.textContent = formatIndicatorValue(definition, row[definition.key]);
         svg.appendChild(value);
       });
 
       const axisLabel = createSvgElement("text", { x: margin.left + width / 2, y: margin.top + sorted.length * rowHeight + 30, "text-anchor": "middle", class: "axis-label" });
-      axisLabel.textContent = `条形颜色表示评论相对偏离方向，长度表示${definition.label}`;
+      axisLabel.textContent = definition.signed
+        ? `左侧为净流出，右侧为净流入；长度表示${definition.label}`
+        : `条形颜色表示评论相对偏离方向，长度表示${definition.label}`;
       svg.appendChild(axisLabel);
     }
 
@@ -2497,6 +2554,12 @@
       if (!detail || !item) return;
       if (!row) row = rows.find((entry) => entry.comments > 0) || rows[0];
       const definition = item.definition;
+      const flowFields = definition.key === "netInflowShare"
+        ? `
+          <div><span>户籍人口</span><strong>${formatWan(row.registeredPopulation2020)}</strong></div>
+          <div><span>流动方向</span><strong>${formatFlowDirection(row.netInflowShare)}</strong></div>
+        `
+        : "";
       detail.innerHTML = `
         <div class="detail-title">
           <span class="swatch" style="background:${row.color}"></span>
@@ -2504,6 +2567,7 @@
         </div>
         <div class="detail-grid">
           <div><span>${definition.label}</span><strong>${formatIndicatorValue(definition, row[definition.key])}</strong></div>
+          ${flowFields}
           <div><span>相对偏离率</span><strong>${formatRelativeDeviation(row.relativeDeviation)}</strong></div>
           <div><span>偏离百分点</span><strong>${formatSignedPercent(row.deviation)}</strong></div>
           <div><span>评论占比</span><strong>${formatPercent(row.commentShare)}</strong></div>
@@ -2530,7 +2594,7 @@
         <span>偏离：${formatSignedPercent(row.deviation)}；代表性倍率：${row.lift.toFixed(2)}x</span>
         <span>每百万人评论数：${row.commentsPerMillion.toFixed(2)}</span>
         <span>城镇化率：${formatIndicatorValue(indicatorDefinitions.urbanization, row.urbanizationRate)}；人均GDP：${formatIndicatorValue(indicatorDefinitions.gdp, row.gdpPerCapita)}</span>
-        <span>省外流入代理：${formatIndicatorValue(indicatorDefinitions.inflow, row.externalInflowShare)}；相对偏离：${formatRelativeDeviation(row.relativeDeviation)}</span>
+        <span>净流入率：${formatIndicatorValue(indicatorDefinitions.inflow, row.netInflowShare)}（${formatFlowDirection(row.netInflowShare)}）；相对偏离：${formatRelativeDeviation(row.relativeDeviation)}</span>
       `;
       tooltip.style.left = `${event.clientX}px`;
       tooltip.style.top = `${event.clientY}px`;
