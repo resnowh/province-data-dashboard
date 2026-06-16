@@ -148,6 +148,40 @@
       margin-bottom: 14px;
     }
 
+    .view-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0 0 14px;
+      padding: 5px;
+      background: rgba(8, 11, 12, .48);
+      border: 1px solid rgba(210, 177, 107, .38);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .04);
+    }
+
+    .view-tab {
+      min-height: 34px;
+      border: 1px solid rgba(210, 177, 107, .28);
+      padding: 0 14px;
+      color: var(--muted);
+      background: rgba(21, 27, 28, .72);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .view-tab.active {
+      color: #fff6d9;
+      background: linear-gradient(180deg, #7b6535, #3b3323);
+      border-color: rgba(236, 202, 123, .7);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .2);
+    }
+
+    .dashboard-view[hidden] {
+      display: none;
+    }
+
     .mini-card {
       min-width: 0;
       min-height: 58px;
@@ -270,14 +304,21 @@
 
     #scatterChart,
     #shareChart,
-    #deviationChart {
+    #deviationChart,
+    #indicatorScatterChart,
+    #indicatorRankChart,
+    #correlationChart {
       max-width: 760px;
       min-height: 360px;
     }
 
     .tile,
     .dot,
+    .indicator-dot,
     .bar-segment,
+    .correlation-bar,
+    .indicator-row,
+    .overview-row,
     .legend-row {
       cursor: pointer;
       transition: opacity .16s ease, filter .16s ease, stroke-width .16s ease, background .16s ease;
@@ -289,7 +330,8 @@
       vector-effect: non-scaling-stroke;
     }
 
-    .dot {
+    .dot,
+    .indicator-dot {
       stroke: rgba(255, 246, 217, .82);
       stroke-width: 1.2;
       vector-effect: non-scaling-stroke;
@@ -303,9 +345,13 @@
 
     .tile:hover,
     .dot:hover,
+    .indicator-dot:hover,
     .bar-segment:hover,
+    .correlation-bar:hover,
     .tile.is-active,
     .dot.is-active,
+    .indicator-dot.is-active,
+    .correlation-bar.is-active,
     .bar-segment.is-active {
       filter: brightness(1.22) saturate(1.14);
       stroke: #fff3bb;
@@ -390,6 +436,146 @@
       color: var(--muted);
       font-size: 12px;
       line-height: 1.45;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .overview-card {
+      min-height: 154px;
+      padding: 13px;
+      background: rgba(9, 12, 13, .38);
+      border: 1px solid rgba(210, 177, 107, .3);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .04);
+    }
+
+    .overview-card h3 {
+      color: #fff6d9;
+      font-size: 16px;
+    }
+
+    .overview-card .score-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0 9px;
+    }
+
+    .overview-card .score-row div,
+    .indicator-summary {
+      min-width: 0;
+      padding: 8px;
+      background: rgba(0, 0, 0, .2);
+      border: 1px solid rgba(255, 255, 255, .07);
+    }
+
+    .overview-card span,
+    .indicator-summary span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .overview-card strong,
+    .indicator-summary strong {
+      display: block;
+      margin-top: 4px;
+      color: #fff6d9;
+      font-size: 17px;
+      line-height: 1.1;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .overview-table-wrap {
+      max-height: 560px;
+      overflow: auto;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 8px 7px;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .data-table th:first-child,
+    .data-table td:first-child {
+      text-align: left;
+      color: #fff6d9;
+      font-weight: 800;
+    }
+
+    .data-table th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      color: var(--muted);
+      background: rgba(24, 31, 32, .98);
+      font-weight: 800;
+    }
+
+    .indicator-layout {
+      display: grid;
+      grid-template-columns: minmax(580px, 1.15fr) minmax(380px, .72fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .indicator-sidebar {
+      display: grid;
+      gap: 14px;
+    }
+
+    .indicator-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .indicator-list {
+      margin: 0;
+      padding: 0 16px 16px;
+      list-style: none;
+      max-height: 536px;
+      overflow: auto;
+    }
+
+    .indicator-row {
+      display: grid;
+      grid-template-columns: 16px minmax(66px, 1fr) 68px 68px;
+      gap: 8px;
+      align-items: center;
+      min-height: 34px;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      color: #fff6d9;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .indicator-row:hover,
+    .indicator-row.is-active,
+    .overview-row:hover,
+    .overview-row.is-active {
+      background: rgba(210, 177, 107, .1);
+    }
+
+    .source-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
     }
 
     .detail {
@@ -674,7 +860,8 @@
 
     @media (max-width: 1380px) {
       header,
-      .layout {
+      .layout,
+      .indicator-layout {
         grid-template-columns: 1fr 1fr;
       }
 
@@ -699,17 +886,30 @@
 
       header,
       .layout,
+      .indicator-layout,
       .study-meta,
       .metrics,
       .form-grid,
       .stat-grid,
-      .detail-grid {
+      .detail-grid,
+      .overview-grid,
+      .overview-card .score-row,
+      .indicator-summary-grid {
         grid-template-columns: 1fr;
       }
 
       .panel-head {
         align-items: flex-start;
         flex-direction: column;
+      }
+
+      .view-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .view-tab {
+        padding: 0 8px;
       }
 
       .legend-list {
@@ -778,7 +978,15 @@
       </div>
     </section>
 
-    <main class="layout">
+    <nav class="view-tabs" aria-label="研究视图切换">
+      <button class="view-tab active" type="button" data-view="baseline">评论偏离</button>
+      <button class="view-tab" type="button" data-view="overview">综合总览</button>
+      <button class="view-tab" type="button" data-view="urbanization">城镇化率</button>
+      <button class="view-tab" type="button" data-view="gdp">人均GDP</button>
+      <button class="view-tab" type="button" data-view="inflow">省外流入</button>
+    </nav>
+
+    <main class="layout dashboard-view" id="baselineView">
       <section class="panel chart-panel" aria-labelledby="squareTitle">
         <div class="panel-head">
           <div class="panel-title">
@@ -958,6 +1166,105 @@
         </div>
       </section>
     </main>
+
+    <main class="stack dashboard-view" id="overviewView" hidden>
+      <section class="panel" aria-labelledby="overviewTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="overviewTitle">综合总览</h2>
+            <span class="panel-kicker">解释变量与相对偏离率</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="overview-grid" id="overviewCards"></div>
+        </div>
+      </section>
+
+      <section class="panel chart-panel" aria-labelledby="correlationTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="correlationTitle">相关性排序</h2>
+            <span class="panel-kicker">Pearson / Spearman / R²</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <svg id="correlationChart" viewBox="0 0 760 360" role="img" aria-label="解释变量与评论相对偏离率相关性排序图"></svg>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="overviewTableTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="overviewTableTitle">31省综合表</h2>
+            <span class="panel-kicker">评论偏离 + 省级解释变量</span>
+          </div>
+        </div>
+        <div class="panel-body overview-table-wrap">
+          <table class="data-table" id="overviewTable"></table>
+        </div>
+      </section>
+    </main>
+
+    <main class="indicator-layout dashboard-view" id="indicatorView" hidden>
+      <section class="panel chart-panel" aria-labelledby="indicatorTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="indicatorTitle">解释变量散点图</h2>
+            <span class="panel-kicker" id="indicatorKicker">横轴解释变量，纵轴评论相对偏离率</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <svg id="indicatorScatterChart" viewBox="0 0 760 520" role="img" aria-label="解释变量与评论相对偏离率散点图"></svg>
+        </div>
+      </section>
+
+      <aside class="indicator-sidebar">
+        <section class="panel" aria-labelledby="indicatorStatsTitle">
+          <div class="panel-head">
+            <div class="panel-title">
+              <h2 id="indicatorStatsTitle">变量统计</h2>
+              <span class="panel-kicker">探索性相关</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="indicator-summary-grid" id="indicatorSummary"></div>
+          </div>
+          <div class="detail" id="indicatorDetailBox" aria-live="polite"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="indicatorRankTitle">
+          <div class="panel-head">
+            <div class="panel-title">
+              <h2 id="indicatorRankTitle">省份排序</h2>
+              <span class="panel-kicker" id="indicatorRankKicker">按相对偏离率</span>
+            </div>
+          </div>
+          <ol class="indicator-list" id="indicatorList"></ol>
+        </section>
+      </aside>
+
+      <section class="panel" aria-labelledby="indicatorBarTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="indicatorBarTitle">变量分布</h2>
+            <span class="panel-kicker">按解释变量排序</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <svg id="indicatorRankChart" viewBox="0 0 760 820" role="img" aria-label="解释变量省份排序条形图"></svg>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="indicatorSourceTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="indicatorSourceTitle">数据说明</h2>
+            <span class="panel-kicker">年份、单位、来源和边界</span>
+          </div>
+        </div>
+        <div class="panel-body source-note" id="indicatorSourceNote"></div>
+      </section>
+    </main>
   </div>
 
   <div class="tooltip" id="tooltip"></div>
@@ -996,6 +1303,73 @@
       { name: "宁夏回族自治区", short: "宁夏", region: "西部", population: 7202654 },
       { name: "新疆维吾尔自治区", short: "新疆", region: "西部", population: 25852345 }
     ];
+
+    const provinceIndicators = [
+      { province: "北京", urbanizationRate: 87.83, gdpPerCapita: 200278, externalInflowShare: 36.1 },
+      { province: "天津", urbanizationRate: 85.49, gdpPerCapita: 122752, externalInflowShare: 18.8 },
+      { province: "河北", urbanizationRate: 62.77, gdpPerCapita: 59332, externalInflowShare: 0 },
+      { province: "山西", urbanizationRate: 64.97, gdpPerCapita: 73984, externalInflowShare: 0 },
+      { province: "内蒙古", urbanizationRate: 69.58, gdpPerCapita: 102677, externalInflowShare: 0 },
+      { province: "辽宁", urbanizationRate: 73.51, gdpPerCapita: 72107, externalInflowShare: 2.2 },
+      { province: "吉林", urbanizationRate: 64.73, gdpPerCapita: 57739, externalInflowShare: 0 },
+      { province: "黑龙江", urbanizationRate: 67.11, gdpPerCapita: 51563, externalInflowShare: 0 },
+      { province: "上海", urbanizationRate: 89.46, gdpPerCapita: 190321, externalInflowShare: 39.5 },
+      { province: "江苏", urbanizationRate: 75.04, gdpPerCapita: 150487, externalInflowShare: 7.1 },
+      { province: "浙江", urbanizationRate: 74.23, gdpPerCapita: 125043, externalInflowShare: 21.6 },
+      { province: "安徽", urbanizationRate: 61.51, gdpPerCapita: 76830, externalInflowShare: 0 },
+      { province: "福建", urbanizationRate: 71.04, gdpPerCapita: 129865, externalInflowShare: 5.8 },
+      { province: "江西", urbanizationRate: 63.13, gdpPerCapita: 71216, externalInflowShare: 0 },
+      { province: "山东", urbanizationRate: 65.53, gdpPerCapita: 90771, externalInflowShare: 0 },
+      { province: "河南", urbanizationRate: 58.08, gdpPerCapita: 60073, externalInflowShare: 0 },
+      { province: "湖北", urbanizationRate: 65.47, gdpPerCapita: 95538, externalInflowShare: 0 },
+      { province: "湖南", urbanizationRate: 61.16, gdpPerCapita: 75938, externalInflowShare: 0 },
+      { province: "广东", urbanizationRate: 75.42, gdpPerCapita: 106985, externalInflowShare: 22.2 },
+      { province: "广西", urbanizationRate: 56.78, gdpPerCapita: 54005, externalInflowShare: 0 },
+      { province: "海南", urbanizationRate: 62.46, gdpPerCapita: 72958, externalInflowShare: 5.4 },
+      { province: "重庆", urbanizationRate: 71.67, gdpPerCapita: 94147, externalInflowShare: 0 },
+      { province: "四川", urbanizationRate: 59.49, gdpPerCapita: 71835, externalInflowShare: 0 },
+      { province: "贵州", urbanizationRate: 55.94, gdpPerCapita: 54172, externalInflowShare: 0 },
+      { province: "云南", urbanizationRate: 52.92, gdpPerCapita: 64107, externalInflowShare: 0 },
+      { province: "西藏", urbanizationRate: 38.88, gdpPerCapita: 65642, externalInflowShare: 7.0 },
+      { province: "陕西", urbanizationRate: 65.16, gdpPerCapita: 85448, externalInflowShare: 0 },
+      { province: "甘肃", urbanizationRate: 55.49, gdpPerCapita: 47867, externalInflowShare: 0 },
+      { province: "青海", urbanizationRate: 62.80, gdpPerCapita: 63903, externalInflowShare: 0 },
+      { province: "宁夏", urbanizationRate: 67.31, gdpPerCapita: 72957, externalInflowShare: 4.0 },
+      { province: "新疆", urbanizationRate: 59.24, gdpPerCapita: 73774, externalInflowShare: 11.3 }
+    ];
+
+    const indicatorDefinitions = {
+      urbanization: {
+        key: "urbanizationRate",
+        label: "城镇化率",
+        shortLabel: "城镇化",
+        unit: "%",
+        year: "2023",
+        sourceLabel: "中国统计年鉴2024 表2-6：分地区年末城镇人口比重",
+        sourceUrl: "https://www.stats.gov.cn/sj/ndsj/2024/html/E02-06.jpg",
+        note: "城镇化率采用国家统计局《中国统计年鉴2024》分省年末城镇人口比重，年份为2023。它反映城镇居住结构，不等于互联网活跃度或评论意愿。"
+      },
+      gdp: {
+        key: "gdpPerCapita",
+        label: "人均GDP",
+        shortLabel: "人均GDP",
+        unit: "元/人",
+        year: "2023",
+        sourceLabel: "中国统计年鉴2024 表3-9：分地区人均地区生产总值",
+        sourceUrl: "https://www.stats.gov.cn/sj/ndsj/2024/html/E03-09.jpg",
+        note: "人均GDP采用国家统计局《中国统计年鉴2024》2023年分省人均地区生产总值，和七普人口基准年份不一致，页面只做探索性相关。"
+      },
+      inflow: {
+        key: "externalInflowShare",
+        label: "省外流入代理",
+        shortLabel: "省外流入",
+        unit: "%",
+        year: "2020",
+        sourceLabel: "七普常住人口 + 2020年末户籍人口正差代理",
+        sourceUrl: "https://www.stats.gov.cn/sj/zxfb/202302/t20230203_1901083.html",
+        note: "默认外来人口变量用各省常住人口减户籍人口的正差占常住人口比例近似，能保守识别净流入压力，但不是完整的“户口登记地在外省人口”。若拿到七普省外户口原表，可直接替换该列。"
+      }
+    };
 
     const defaultMeta = {
       source_title: "网易云音乐9个公开榜单分层抽样：每榜最多24首、每首最多3个评论时间窗口、每窗口80条",
@@ -1049,6 +1423,7 @@
     ];
 
     const provinceAliases = new Map();
+    const indicatorMap = new Map(provinceIndicators.map((item) => [item.province, item]));
     const storageKey = "province-comment-dashboard-v3-stratified-9-lists";
     const populationTotal = rawData.reduce((sum, item) => sum + item.population, 0);
     const numberFormatter = new Intl.NumberFormat("zh-CN");
@@ -1057,8 +1432,10 @@
     let commentData = defaultCommentData.map((item) => ({ ...item }));
     let rows = [];
     let stats = {};
+    let indicatorStats = {};
     let pinnedIndex = null;
     let sortMode = "deviation";
+    let activeView = "baseline";
 
     rawData.forEach((item) => {
       const aliases = new Set([
@@ -1155,6 +1532,7 @@
         const comments = counts.get(item.name) || 0;
         const populationShare = item.population / populationTotal * 100;
         const commentShare = commentTotal > 0 ? comments / commentTotal * 100 : 0;
+        const indicator = indicatorMap.get(item.short) || {};
         return {
           ...item,
           index,
@@ -1164,8 +1542,12 @@
           commentShare,
           deviation: commentShare - populationShare,
           lift: populationShare > 0 ? commentShare / populationShare : 0,
+          relativeDeviation: populationShare > 0 ? commentShare / populationShare - 1 : 0,
           commentsPerMillion: item.population > 0 ? comments / (item.population / 1000000) : 0,
-          populationRank: sortedByPopulation.findIndex((entry) => entry.name === item.name) + 1
+          populationRank: sortedByPopulation.findIndex((entry) => entry.name === item.name) + 1,
+          urbanizationRate: Number(indicator.urbanizationRate),
+          gdpPerCapita: Number(indicator.gdpPerCapita),
+          externalInflowShare: Number(indicator.externalInflowShare)
         };
       });
       const sortedByComments = [...rowsBase].sort((a, b) => b.comments - a.comments || b.population - a.population);
@@ -1290,6 +1672,47 @@
       const under = [...currentRows].sort((a, b) => a.deviation - b.deviation).slice(0, 5);
       const topLift = [...currentRows].filter((row) => row.comments > 0).sort((a, b) => b.lift - a.lift)[0];
       return { pearson, spearman, chiSquare, degreesOfFreedom, pValue, regression, totalComments, over, under, topLift };
+    }
+
+    function computeIndicatorStats(currentRows) {
+      const result = {};
+      Object.entries(indicatorDefinitions).forEach(([id, definition]) => {
+        const points = currentRows.filter((row) => Number.isFinite(row[definition.key]) && Number.isFinite(row.relativeDeviation));
+        const xs = points.map((row) => row[definition.key]);
+        const ys = points.map((row) => row.relativeDeviation * 100);
+        const pearson = points.length > 1 ? correlation(xs, ys) : NaN;
+        const spearman = points.length > 1 ? correlation(rankValues(xs), rankValues(ys)) : NaN;
+        const regression = points.length > 1 ? linearRegression(xs, ys) : { slope: 0, intercept: 0 };
+        const rSquared = Number.isFinite(pearson) ? pearson ** 2 : NaN;
+        result[id] = {
+          id,
+          definition,
+          points,
+          pearson,
+          spearman,
+          regression,
+          rSquared,
+          over: [...points].sort((a, b) => b.relativeDeviation - a.relativeDeviation).slice(0, 5),
+          under: [...points].sort((a, b) => a.relativeDeviation - b.relativeDeviation).slice(0, 5),
+          highValue: [...points].sort((a, b) => b[definition.key] - a[definition.key]).slice(0, 3)
+        };
+      });
+      return result;
+    }
+
+    function formatIndicatorValue(definition, value, digits = 1) {
+      if (!Number.isFinite(value)) return "N/A";
+      if (definition.key === "gdpPerCapita") return `${numberFormatter.format(Math.round(value))}元`;
+      return `${value.toFixed(digits)}%`;
+    }
+
+    function formatRelativeDeviation(value, digits = 1) {
+      const percent = value * 100;
+      return `${percent >= 0 ? "+" : ""}${percent.toFixed(Math.abs(percent) >= 100 ? 0 : digits)}%`;
+    }
+
+    function getIndicatorViewKey() {
+      return indicatorDefinitions[activeView] ? activeView : "urbanization";
     }
 
     function squarifiedTreemap(items, x, y, width, height, valueKey) {
@@ -1691,7 +2114,7 @@
       if (sortMode === "comments") return cloned.sort((a, b) => b.comments - a.comments || b.population - a.population);
       if (sortMode === "population") return cloned.sort((a, b) => b.population - a.population);
       if (sortMode === "lift") return cloned.sort((a, b) => b.lift - a.lift || b.comments - a.comments);
-      return cloned.sort((a, b) => Math.abs(b.deviation) - Math.abs(a.deviation));
+      return cloned.sort((a, b) => b.deviation - a.deviation || b.comments - a.comments);
     }
 
     function renderLegend() {
@@ -1762,16 +2185,341 @@
       const currentNames = new Set(commentData.map((item) => normalizeProvince(item.province)).filter(Boolean));
       const populationShareSum = rows.reduce((sum, row) => sum + row.populationShare, 0);
       const commentShareSum = rows.reduce((sum, row) => sum + row.commentShare, 0);
+      const indicatorReady = rows.every((row) =>
+        Number.isFinite(row.urbanizationRate) &&
+        Number.isFinite(row.gdpPerCapita) &&
+        Number.isFinite(row.externalInflowShare)
+      );
       const items = [
         { ok: currentNames.size === 31, text: `省份匹配：${currentNames.size}/31 个省级行政区有输入记录。未输入省份会按 0 评论处理。` },
         { ok: Math.abs(populationShareSum - 100) < 0.02, text: `人口占比合计：${populationShareSum.toFixed(4)}%。` },
         { ok: stats.totalComments === 0 || Math.abs(commentShareSum - 100) < 0.02, text: `评论占比合计：${commentShareSum.toFixed(4)}%。` },
+        { ok: indicatorReady, text: `省级解释变量：${indicatorReady ? "31/31" : rows.filter((row) => Number.isFinite(row.urbanizationRate) && Number.isFinite(row.gdpPerCapita) && Number.isFinite(row.externalInflowShare)).length + "/31"} 个省份具备城镇化率、人均GDP、省外流入代理。` },
         { ok: stats.totalComments >= 300, text: stats.totalComments >= 300 ? "样本量达到 300 条以上，可展示相关性和卡方检验。" : "样本量低于 300 条，仅建议查看描述统计。" },
         { ok: true, text: "IP属地只代表平台显示的网络访问属地，不等于户籍、省内真实居住人口或真实身份。" }
       ];
       list.innerHTML = items.map((item) => `
         <li><span class="badge ${item.ok ? "" : "warn"}">${item.ok ? "OK" : "注意"}</span><span>${item.text}</span></li>
       `).join("");
+    }
+
+    function renderOverview() {
+      const cards = document.getElementById("overviewCards");
+      cards.innerHTML = Object.entries(indicatorDefinitions).map(([id, definition]) => {
+        const item = indicatorStats[id];
+        const over = item.over[0];
+        const under = item.under[0];
+        return `
+          <article class="overview-card">
+            <h3>${definition.label}</h3>
+            <div class="score-row">
+              <div><span>Pearson</span><strong>${formatCorrelation(item.pearson)}</strong></div>
+              <div><span>Spearman</span><strong>${formatCorrelation(item.spearman)}</strong></div>
+              <div><span>R²</span><strong>${Number.isFinite(item.rSquared) ? item.rSquared.toFixed(3) : "N/A"}</strong></div>
+            </div>
+            <p class="small">最高正偏离：${over ? `${over.short} ${formatRelativeDeviation(over.relativeDeviation)}` : "N/A"}；最低负偏离：${under ? `${under.short} ${formatRelativeDeviation(under.relativeDeviation)}` : "N/A"}。</p>
+            <p class="small">${definition.year}，${definition.unit}。${definition.shortLabel}只用于解释本评论样本的相对偏离。</p>
+          </article>
+        `;
+      }).join("");
+      renderCorrelationChart();
+      renderOverviewTable();
+    }
+
+    function renderCorrelationChart() {
+      const svg = document.getElementById("correlationChart");
+      svg.innerHTML = "";
+      const entries = Object.entries(indicatorStats).sort((a, b) => Math.abs(b[1].pearson) - Math.abs(a[1].pearson));
+      const margin = { left: 104, right: 86, top: 38, bottom: 46 };
+      const width = 760 - margin.left - margin.right;
+      const rowHeight = 72;
+      const zeroX = margin.left + width / 2;
+      const scale = (value) => zeroX + value * (width / 2);
+
+      [-1, -0.5, 0, 0.5, 1].forEach((value) => {
+        const x = scale(value);
+        svg.appendChild(createSvgElement("line", { x1: x, y1: 22, x2: x, y2: margin.top + entries.length * rowHeight, class: value === 0 ? "zero-line" : "grid-line" }));
+        const tick = createSvgElement("text", { x, y: 18, "text-anchor": "middle", class: "chart-muted" });
+        tick.textContent = value.toFixed(1);
+        svg.appendChild(tick);
+      });
+
+      entries.forEach(([id, item], i) => {
+        const y = margin.top + i * rowHeight;
+        const definition = item.definition;
+        const pearson = Number.isFinite(item.pearson) ? item.pearson : 0;
+        const len = Math.abs(scale(pearson) - zeroX);
+        const x = pearson >= 0 ? zeroX : zeroX - len;
+        const label = createSvgElement("text", { x: margin.left - 10, y: y + 20, "text-anchor": "end", class: "chart-label", "font-size": 14 });
+        label.textContent = definition.shortLabel;
+        svg.appendChild(label);
+
+        const bar = createSvgElement("rect", {
+          x: x.toFixed(2),
+          y: y + 6,
+          width: Math.max(2, len).toFixed(2),
+          height: 20,
+          rx: 0,
+          fill: pearson >= 0 ? "var(--good)" : "var(--bad)",
+          class: "correlation-bar",
+          "data-indicator": id
+        });
+        svg.appendChild(bar);
+
+        const value = createSvgElement("text", {
+          x: pearson >= 0 ? x + len + 8 : x - 8,
+          y: y + 21,
+          "text-anchor": pearson >= 0 ? "start" : "end",
+          class: "chart-muted"
+        });
+        value.textContent = `Pearson ${formatCorrelation(item.pearson)}`;
+        svg.appendChild(value);
+
+        const meta = createSvgElement("text", { x: margin.left, y: y + 48, class: "chart-muted" });
+        meta.textContent = `Spearman ${formatCorrelation(item.spearman)} · R² ${Number.isFinite(item.rSquared) ? item.rSquared.toFixed(3) : "N/A"} · ${definition.year}`;
+        svg.appendChild(meta);
+      });
+
+      const axisLabel = createSvgElement("text", { x: margin.left + width / 2, y: 344, "text-anchor": "middle", class: "axis-label" });
+      axisLabel.textContent = "与评论相对偏离率的相关系数，负值表示变量越高偏离越低";
+      svg.appendChild(axisLabel);
+    }
+
+    function renderOverviewTable() {
+      const table = document.getElementById("overviewTable");
+      const sorted = [...rows].sort((a, b) => b.relativeDeviation - a.relativeDeviation || b.comments - a.comments);
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>省份</th>
+            <th>相对偏离</th>
+            <th>偏离pp</th>
+            <th>评论占比</th>
+            <th>人口占比</th>
+            <th>城镇化率</th>
+            <th>人均GDP</th>
+            <th>省外流入代理</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sorted.map((row) => `
+            <tr class="overview-row" data-idx="${row.index}">
+              <td>${row.short}</td>
+              <td>${formatRelativeDeviation(row.relativeDeviation)}</td>
+              <td>${formatSignedPercent(row.deviation, 2)}</td>
+              <td>${formatPercent(row.commentShare, 2)}</td>
+              <td>${formatPercent(row.populationShare, 2)}</td>
+              <td>${formatIndicatorValue(indicatorDefinitions.urbanization, row.urbanizationRate)}</td>
+              <td>${formatIndicatorValue(indicatorDefinitions.gdp, row.gdpPerCapita)}</td>
+              <td>${formatIndicatorValue(indicatorDefinitions.inflow, row.externalInflowShare)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+      table.querySelectorAll(".overview-row").forEach((rowElement) => {
+        const row = rows.find((item) => item.index === Number(rowElement.dataset.idx));
+        attachInteractiveHandlers(rowElement, row);
+      });
+    }
+
+    function renderIndicatorView(viewKey = getIndicatorViewKey()) {
+      const definition = indicatorDefinitions[viewKey];
+      const item = indicatorStats[viewKey];
+      if (!definition || !item) return;
+      document.getElementById("indicatorTitle").textContent = `${definition.label}与评论偏离`;
+      document.getElementById("indicatorKicker").textContent = `横轴：${definition.label}；纵轴：评论相对偏离率`;
+      document.getElementById("indicatorRankKicker").textContent = `按${definition.label}排序`;
+      renderIndicatorSummary(item);
+      renderIndicatorScatter(item);
+      renderIndicatorRankChart(item);
+      renderIndicatorList(item);
+      renderIndicatorDetail(pinnedIndex === null ? undefined : rows.find((row) => row.index === pinnedIndex), item);
+      renderIndicatorSource(item);
+    }
+
+    function renderIndicatorSummary(item) {
+      const box = document.getElementById("indicatorSummary");
+      box.innerHTML = `
+        <div class="indicator-summary"><span>Pearson</span><strong>${formatCorrelation(item.pearson)}</strong></div>
+        <div class="indicator-summary"><span>Spearman</span><strong>${formatCorrelation(item.spearman)}</strong></div>
+        <div class="indicator-summary"><span>R²</span><strong>${Number.isFinite(item.rSquared) ? item.rSquared.toFixed(3) : "N/A"}</strong></div>
+      `;
+    }
+
+    function renderIndicatorScatter(item) {
+      const svg = document.getElementById("indicatorScatterChart");
+      svg.innerHTML = "";
+      const definition = item.definition;
+      const points = item.points;
+      const margin = { left: 76, right: 34, top: 34, bottom: 68 };
+      const width = 760 - margin.left - margin.right;
+      const height = 520 - margin.top - margin.bottom;
+      const xs = points.map((row) => row[definition.key]);
+      const ys = points.map((row) => row.relativeDeviation * 100);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(0, ...ys);
+      const maxY = Math.max(0, ...ys);
+      const padX = Math.max(1, (maxX - minX) * 0.08);
+      const padY = Math.max(8, (maxY - minY) * 0.12);
+      const domainX = [minX - padX, maxX + padX];
+      const domainY = [minY - padY, maxY + padY];
+      const scaleX = (value) => margin.left + ((value - domainX[0]) / (domainX[1] - domainX[0])) * width;
+      const scaleY = (value) => margin.top + height - ((value - domainY[0]) / (domainY[1] - domainY[0])) * height;
+
+      for (let i = 0; i <= 5; i += 1) {
+        const x = margin.left + (i / 5) * width;
+        const y = margin.top + (i / 5) * height;
+        svg.appendChild(createSvgElement("line", { x1: x, y1: margin.top, x2: x, y2: margin.top + height, class: "grid-line" }));
+        svg.appendChild(createSvgElement("line", { x1: margin.left, y1: y, x2: margin.left + width, y2: y, class: "grid-line" }));
+      }
+      svg.appendChild(createSvgElement("line", { x1: margin.left, y1: scaleY(0), x2: margin.left + width, y2: scaleY(0), class: "zero-line" }));
+      svg.appendChild(createSvgElement("line", { x1: margin.left, y1: margin.top + height, x2: margin.left + width, y2: margin.top + height, class: "axis" }));
+      svg.appendChild(createSvgElement("line", { x1: margin.left, y1: margin.top, x2: margin.left, y2: margin.top + height, class: "axis" }));
+
+      const xStart = domainX[0];
+      const xEnd = domainX[1];
+      const yStart = item.regression.intercept + item.regression.slope * xStart;
+      const yEnd = item.regression.intercept + item.regression.slope * xEnd;
+      svg.appendChild(createSvgElement("line", {
+        x1: scaleX(xStart),
+        y1: scaleY(yStart),
+        x2: scaleX(xEnd),
+        y2: scaleY(yEnd),
+        stroke: "rgba(236,202,123,.78)",
+        "stroke-width": 2.2,
+        "stroke-dasharray": "7 6"
+      }));
+
+      const outlierCutoff = [...ys].map(Math.abs).sort((a, b) => b - a)[4] || 30;
+      points.forEach((row) => {
+        const yValue = row.relativeDeviation * 100;
+        const dot = createSvgElement("circle", {
+          cx: scaleX(row[definition.key]).toFixed(2),
+          cy: scaleY(yValue).toFixed(2),
+          r: Math.max(5, Math.min(11, 5 + Math.sqrt(row.comments + 1) / 5)).toFixed(2),
+          fill: row.color,
+          class: "indicator-dot",
+          "data-idx": row.index
+        });
+        attachInteractiveHandlers(dot, row);
+        svg.appendChild(dot);
+        if (Math.abs(yValue) >= outlierCutoff || Math.abs(row.deviation) >= 2.2) {
+          const label = createSvgElement("text", {
+            x: (scaleX(row[definition.key]) + 10).toFixed(2),
+            y: (scaleY(yValue) - 8).toFixed(2),
+            class: "chart-muted"
+          });
+          label.textContent = row.short;
+          svg.appendChild(label);
+        }
+      });
+
+      const xLabel = createSvgElement("text", { x: margin.left + width / 2, y: 502, "text-anchor": "middle", class: "axis-label" });
+      xLabel.textContent = `${definition.label}（${definition.unit}，${definition.year}）`;
+      svg.appendChild(xLabel);
+      const yLabel = createSvgElement("text", { x: 18, y: 260, transform: "rotate(-90 18 260)", "text-anchor": "middle", class: "axis-label" });
+      yLabel.textContent = "评论相对偏离率";
+      svg.appendChild(yLabel);
+
+      const xMaxText = createSvgElement("text", { x: margin.left + width, y: 480, "text-anchor": "end", class: "chart-muted" });
+      xMaxText.textContent = formatIndicatorValue(definition, maxX);
+      svg.appendChild(xMaxText);
+      const yMaxText = createSvgElement("text", { x: margin.left - 10, y: margin.top + 4, "text-anchor": "end", class: "chart-muted" });
+      yMaxText.textContent = `${maxY.toFixed(0)}%`;
+      svg.appendChild(yMaxText);
+    }
+
+    function renderIndicatorRankChart(item) {
+      const svg = document.getElementById("indicatorRankChart");
+      svg.innerHTML = "";
+      const definition = item.definition;
+      const sorted = [...rows].sort((a, b) => b[definition.key] - a[definition.key] || b.relativeDeviation - a.relativeDeviation);
+      const margin = { left: 88, right: 92, top: 36, bottom: 40 };
+      const width = 760 - margin.left - margin.right;
+      const rowHeight = 24;
+      const maxValue = Math.max(1, ...sorted.map((row) => row[definition.key]));
+      const scale = (value) => (value / maxValue) * width;
+
+      sorted.forEach((row, i) => {
+        const y = margin.top + i * rowHeight;
+        const label = createSvgElement("text", { x: margin.left - 10, y: y + 16, "text-anchor": "end", class: "chart-muted" });
+        label.textContent = row.short;
+        svg.appendChild(label);
+
+        const bar = createSvgElement("rect", {
+          x: margin.left,
+          y: y + 4,
+          width: Math.max(2, scale(row[definition.key])).toFixed(2),
+          height: 14,
+          rx: 0,
+          fill: row.relativeDeviation >= 0 ? "var(--good)" : "var(--bad)",
+          class: "bar-segment",
+          "data-idx": row.index
+        });
+        attachInteractiveHandlers(bar, row);
+        svg.appendChild(bar);
+
+        const value = createSvgElement("text", { x: margin.left + scale(row[definition.key]) + 8, y: y + 16, class: "chart-muted" });
+        value.textContent = formatIndicatorValue(definition, row[definition.key]);
+        svg.appendChild(value);
+      });
+
+      const axisLabel = createSvgElement("text", { x: margin.left + width / 2, y: margin.top + sorted.length * rowHeight + 30, "text-anchor": "middle", class: "axis-label" });
+      axisLabel.textContent = `条形颜色表示评论相对偏离方向，长度表示${definition.label}`;
+      svg.appendChild(axisLabel);
+    }
+
+    function renderIndicatorList(item) {
+      const list = document.getElementById("indicatorList");
+      const definition = item.definition;
+      list.innerHTML = "";
+      [...rows]
+        .sort((a, b) => b.relativeDeviation - a.relativeDeviation || b[definition.key] - a[definition.key])
+        .forEach((row) => {
+          const entry = document.createElement("li");
+          entry.className = "indicator-row";
+          entry.dataset.idx = row.index;
+          entry.style.color = row.color;
+          entry.innerHTML = `
+            <span class="swatch" style="background:${row.color}"></span>
+            <span>${row.name}</span>
+            <span class="legend-number">${formatIndicatorValue(definition, row[definition.key])}</span>
+            <span class="legend-number">${formatRelativeDeviation(row.relativeDeviation)}</span>
+          `;
+          attachInteractiveHandlers(entry, row);
+          list.appendChild(entry);
+        });
+    }
+
+    function renderIndicatorDetail(row, item = indicatorStats[getIndicatorViewKey()]) {
+      const detail = document.getElementById("indicatorDetailBox");
+      if (!detail || !item) return;
+      if (!row) row = rows.find((entry) => entry.comments > 0) || rows[0];
+      const definition = item.definition;
+      detail.innerHTML = `
+        <div class="detail-title">
+          <span class="swatch" style="background:${row.color}"></span>
+          <span>${row.name}</span>
+        </div>
+        <div class="detail-grid">
+          <div><span>${definition.label}</span><strong>${formatIndicatorValue(definition, row[definition.key])}</strong></div>
+          <div><span>相对偏离率</span><strong>${formatRelativeDeviation(row.relativeDeviation)}</strong></div>
+          <div><span>偏离百分点</span><strong>${formatSignedPercent(row.deviation)}</strong></div>
+          <div><span>评论占比</span><strong>${formatPercent(row.commentShare)}</strong></div>
+          <div><span>人口占比</span><strong>${formatPercent(row.populationShare)}</strong></div>
+          <div><span>代表性倍率</span><strong>${row.lift.toFixed(2)}x</strong></div>
+        </div>
+      `;
+    }
+
+    function renderIndicatorSource(item) {
+      const definition = item.definition;
+      document.getElementById("indicatorSourceNote").innerHTML = `
+        <p><strong>${definition.label}</strong>：${definition.year}，单位 ${definition.unit}，来源：<a href="${definition.sourceUrl}" target="_blank" rel="noreferrer">${definition.sourceLabel}</a>。</p>
+        <p>${definition.note}</p>
+        <p>纵轴统一为相对偏离率 = 评论占比 / 人口占比 - 1。该页只说明当前评论样本中的 IP属地偏离和省级公开统计变量是否同向变化，不构成因果结论，也不能外推为全网用户结构。</p>
+      `;
     }
 
     function showTooltip(event, row) {
@@ -1781,6 +2529,8 @@
         <span>评论数：${numberFormatter.format(row.comments)}，占 ${formatPercent(row.commentShare)}</span>
         <span>偏离：${formatSignedPercent(row.deviation)}；代表性倍率：${row.lift.toFixed(2)}x</span>
         <span>每百万人评论数：${row.commentsPerMillion.toFixed(2)}</span>
+        <span>城镇化率：${formatIndicatorValue(indicatorDefinitions.urbanization, row.urbanizationRate)}；人均GDP：${formatIndicatorValue(indicatorDefinitions.gdp, row.gdpPerCapita)}</span>
+        <span>省外流入代理：${formatIndicatorValue(indicatorDefinitions.inflow, row.externalInflowShare)}；相对偏离：${formatRelativeDeviation(row.relativeDeviation)}</span>
       `;
       tooltip.style.left = `${event.clientX}px`;
       tooltip.style.top = `${event.clientY}px`;
@@ -1792,19 +2542,22 @@
     }
 
     function highlight(index) {
-      document.querySelectorAll(".tile, .dot, .bar-segment, .legend-row").forEach((element) => {
+      document.querySelectorAll(".tile, .dot, .indicator-dot, .bar-segment, .indicator-row, .overview-row, .legend-row").forEach((element) => {
         const active = Number(element.dataset.idx) === index;
         element.classList.toggle("is-active", active);
         element.classList.toggle("is-dim", !active);
       });
-      renderDetail(rows.find((row) => row.index === index));
+      const row = rows.find((entry) => entry.index === index);
+      renderDetail(row);
+      renderIndicatorDetail(row);
     }
 
     function clearHighlight() {
-      document.querySelectorAll(".tile, .dot, .bar-segment, .legend-row").forEach((element) => {
+      document.querySelectorAll(".tile, .dot, .indicator-dot, .bar-segment, .indicator-row, .overview-row, .legend-row").forEach((element) => {
         element.classList.remove("is-active", "is-dim");
       });
       renderDetail();
+      renderIndicatorDetail();
     }
 
     function readInputsToMeta() {
@@ -1842,6 +2595,7 @@
     function renderAll() {
       rows = buildRows();
       stats = computeStats(rows);
+      indicatorStats = computeIndicatorStats(rows);
       renderMetrics();
       renderDoubleSquare();
       renderScatter();
@@ -1850,7 +2604,22 @@
       renderLegend();
       renderDetail(pinnedIndex === null ? undefined : rows.find((row) => row.index === pinnedIndex));
       renderValidation();
-      window.__dashboardState = { rows, stats, commentMeta, commentData };
+      renderOverview();
+      renderIndicatorView(getIndicatorViewKey());
+      if (pinnedIndex !== null) highlight(pinnedIndex);
+      window.__dashboardState = { rows, stats, indicatorStats, commentMeta, commentData, provinceIndicators, activeView };
+    }
+
+    function switchView(view) {
+      activeView = view;
+      document.querySelectorAll("[data-view]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.view === view);
+      });
+      document.getElementById("baselineView").hidden = view !== "baseline";
+      document.getElementById("overviewView").hidden = view !== "overview";
+      document.getElementById("indicatorView").hidden = !indicatorDefinitions[view];
+      if (indicatorDefinitions[view]) renderIndicatorView(view);
+      if (pinnedIndex !== null) highlight(pinnedIndex);
     }
 
     document.querySelectorAll("[data-sort]").forEach((button) => {
@@ -1860,6 +2629,10 @@
         renderLegend();
         if (pinnedIndex !== null) highlight(pinnedIndex);
       });
+    });
+
+    document.querySelectorAll("[data-view]").forEach((button) => {
+      button.addEventListener("click", () => switchView(button.dataset.view));
     });
 
     document.getElementById("applyCsvButton").addEventListener("click", () => {
@@ -1890,6 +2663,8 @@
 
     window.__dashboardTestHooks = {
       parseCsv,
+      indicatorDefinitions,
+      provinceIndicators,
       setCommentData(nextData, nextMeta = {}) {
         commentData = nextData.map((item) => ({ ...item }));
         commentMeta = { ...commentMeta, ...nextMeta };
