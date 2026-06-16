@@ -1,0 +1,1911 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>评论 IP属地与省份人口相关性仪表盘</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101316;
+      --panel: #1d2425;
+      --panel-2: #273133;
+      --ink: #f3ebd5;
+      --muted: #b9ad91;
+      --line: rgba(210, 177, 107, .42);
+      --gold: #d2b16b;
+      --good: #5fa678;
+      --bad: #c45f52;
+      --blue: #69a4bd;
+      --shadow: rgba(0, 0, 0, .42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "SimHei", "Segoe UI", sans-serif;
+      background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 18px),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, .018) 0 1px, transparent 1px 18px),
+        #111518;
+    }
+
+    .page {
+      width: min(1860px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 22px 0 28px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(380px, 1fr) minmax(520px, .9fr);
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(25px, 2.2vw, 40px);
+      line-height: 1.14;
+      font-weight: 900;
+    }
+
+    h2 {
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    h3 {
+      font-size: 15px;
+      line-height: 1.25;
+      font-weight: 850;
+    }
+
+    a {
+      color: #e7c979;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(231, 201, 121, .42);
+    }
+
+    .subline,
+    .note,
+    .small {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .subline {
+      margin: 8px 0 0;
+      font-size: 14px;
+    }
+
+    .small {
+      font-size: 12px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(118px, 1fr));
+      gap: 8px;
+    }
+
+    .metric,
+    .panel,
+    .mini-card {
+      min-width: 0;
+      background:
+        linear-gradient(180deg, rgba(45, 56, 58, .96), rgba(21, 26, 28, .98)),
+        var(--panel);
+      border: 1px solid rgba(139, 116, 69, .9);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 244, 199, .07),
+        inset 0 14px 30px rgba(255, 255, 255, .035),
+        0 16px 34px rgba(0, 0, 0, .32);
+    }
+
+    .metric {
+      min-height: 70px;
+      padding: 10px 12px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 7px;
+      color: #fff6d9;
+      font-size: clamp(17px, 1.35vw, 24px);
+      line-height: 1.08;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .study-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .mini-card {
+      min-width: 0;
+      min-height: 58px;
+      padding: 10px 12px;
+    }
+
+    .mini-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .mini-card strong {
+      display: block;
+      margin-top: 5px;
+      overflow: hidden;
+      color: #fff6d9;
+      font-size: 14px;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(520px, 1.05fr) minmax(480px, 1fr) minmax(360px, .78fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .panel {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .panel::before,
+    .panel::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      width: 32px;
+      height: 32px;
+      border-color: rgba(236, 202, 123, .74);
+      pointer-events: none;
+    }
+
+    .panel::before {
+      top: 8px;
+      left: 8px;
+      border-top: 2px solid;
+      border-left: 2px solid;
+    }
+
+    .panel::after {
+      right: 8px;
+      bottom: 8px;
+      border-right: 2px solid;
+      border-bottom: 2px solid;
+    }
+
+    .panel-head,
+    .panel-body,
+    .detail,
+    .legend-list {
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 56px;
+      padding: 16px 18px 10px;
+      border-bottom: 1px solid rgba(210, 177, 107, .32);
+      background: rgba(0, 0, 0, .13);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: baseline;
+      min-width: 0;
+      gap: 10px;
+    }
+
+    .panel-kicker {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .panel-body {
+      padding: 16px 18px 18px;
+    }
+
+    .chart-panel .panel-body {
+      display: grid;
+      place-items: center;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    #doubleSquareChart {
+      max-width: 780px;
+      background:
+        linear-gradient(180deg, rgba(7, 9, 10, .34), rgba(255, 255, 255, .018));
+      border: 3px solid rgba(55, 43, 26, .98);
+      outline: 1px solid rgba(220, 188, 109, .58);
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 238, 181, .07),
+        0 14px 30px rgba(0, 0, 0, .28);
+    }
+
+    #scatterChart,
+    #shareChart,
+    #deviationChart {
+      max-width: 760px;
+      min-height: 360px;
+    }
+
+    .tile,
+    .dot,
+    .bar-segment,
+    .legend-row {
+      cursor: pointer;
+      transition: opacity .16s ease, filter .16s ease, stroke-width .16s ease, background .16s ease;
+    }
+
+    .tile {
+      stroke: rgba(13, 15, 16, .96);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .dot {
+      stroke: rgba(255, 246, 217, .82);
+      stroke-width: 1.2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .bar-segment {
+      stroke: rgba(12, 14, 14, .85);
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .tile:hover,
+    .dot:hover,
+    .bar-segment:hover,
+    .tile.is-active,
+    .dot.is-active,
+    .bar-segment.is-active {
+      filter: brightness(1.22) saturate(1.14);
+      stroke: #fff3bb;
+      stroke-width: 2.6;
+    }
+
+    .is-dim {
+      opacity: .28;
+    }
+
+    .axis,
+    .grid-line,
+    .zero-line {
+      vector-effect: non-scaling-stroke;
+    }
+
+    .axis {
+      stroke: rgba(232, 209, 146, .7);
+      stroke-width: 1.2;
+    }
+
+    .grid-line {
+      stroke: rgba(255, 255, 255, .08);
+      stroke-width: 1;
+    }
+
+    .zero-line {
+      stroke: rgba(255, 246, 217, .54);
+      stroke-width: 1.4;
+    }
+
+    .chart-label,
+    .tile-label {
+      fill: #fff9e8;
+      font-weight: 800;
+      paint-order: stroke;
+      stroke: rgba(0, 0, 0, .68);
+      stroke-linejoin: round;
+      stroke-width: 3px;
+      pointer-events: none;
+      letter-spacing: 0;
+    }
+
+    .chart-muted,
+    .axis-label {
+      fill: #cfc09c;
+      font-size: 12px;
+      pointer-events: none;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat-card {
+      min-height: 82px;
+      padding: 12px;
+      background: rgba(9, 12, 13, .38);
+      border: 1px solid rgba(210, 177, 107, .28);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .04);
+    }
+
+    .stat-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-top: 7px;
+      color: #fff6d9;
+      font-size: 22px;
+      line-height: 1.05;
+      font-weight: 900;
+    }
+
+    .stat-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .detail {
+      margin: 14px 16px 10px;
+      padding: 14px 14px 13px;
+      background: rgba(9, 12, 13, .42);
+      border: 1px solid rgba(210, 177, 107, .36);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .05);
+    }
+
+    .detail-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .detail-grid span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .detail-grid strong {
+      display: block;
+      margin-top: 4px;
+      color: #fff6d9;
+      font-size: 15px;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .swatch {
+      flex: 0 0 auto;
+      width: 12px;
+      height: 12px;
+      border: 1px solid rgba(255, 246, 217, .76);
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, .22);
+    }
+
+    .legend-panel {
+      display: grid;
+      grid-template-rows: auto auto minmax(420px, 1fr);
+      max-height: calc(100vh - 122px);
+      position: sticky;
+      top: 12px;
+    }
+
+    .legend-list {
+      margin: 0;
+      padding: 0 16px 16px;
+      overflow: auto;
+      list-style: none;
+    }
+
+    .legend-row {
+      display: grid;
+      grid-template-columns: 16px minmax(76px, 1fr) 58px 58px 54px;
+      gap: 8px;
+      align-items: center;
+      min-height: 34px;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+    }
+
+    .legend-row:hover,
+    .legend-row.is-active {
+      background: rgba(210, 177, 107, .1);
+    }
+
+    .legend-row .name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .legend-number {
+      color: #fff6d9;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .legend-sub {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.15;
+      text-align: right;
+    }
+
+    .segmented {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      padding: 2px;
+      border: 1px solid rgba(210, 177, 107, .48);
+      background: rgba(9, 12, 13, .42);
+    }
+
+    .segmented button,
+    .action-button {
+      min-height: 30px;
+      border: 0;
+      padding: 0 10px;
+      color: var(--muted);
+      background: transparent;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .segmented button.active,
+    .action-button.primary {
+      color: #fff6d9;
+      background: linear-gradient(180deg, #745f32, #3b3323);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .18);
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .action-button {
+      border: 1px solid rgba(210, 177, 107, .42);
+      background: rgba(9, 12, 13, .42);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      min-width: 0;
+      color: #fff6d9;
+      background: rgba(8, 11, 12, .66);
+      border: 1px solid rgba(210, 177, 107, .36);
+      font: inherit;
+      font-size: 13px;
+    }
+
+    input {
+      min-height: 34px;
+      padding: 7px 9px;
+    }
+
+    textarea {
+      min-height: 170px;
+      padding: 9px;
+      resize: vertical;
+      line-height: 1.45;
+      font-family: Consolas, "Microsoft YaHei", monospace;
+    }
+
+    .validation-list {
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .validation-list li {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      padding: 5px 0;
+      border-top: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      min-width: 44px;
+      padding: 1px 6px 2px;
+      color: #fff6d9;
+      background: rgba(95, 166, 120, .26);
+      border: 1px solid rgba(95, 166, 120, .48);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .badge.warn {
+      background: rgba(196, 95, 82, .24);
+      border-color: rgba(196, 95, 82, .52);
+    }
+
+    .research-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .research-list li {
+      padding: 9px 0;
+      border-top: 1px solid rgba(255, 255, 255, .07);
+      color: #fff6d9;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .research-list li:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .research-list span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .tooltip {
+      position: fixed;
+      z-index: 20;
+      min-width: 220px;
+      max-width: 300px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, calc(-100% - 14px));
+      padding: 10px 11px;
+      color: #fff6d9;
+      background: linear-gradient(180deg, rgba(48, 57, 58, .98), rgba(19, 23, 25, .98));
+      border: 1px solid rgba(236, 202, 123, .78);
+      box-shadow: 0 14px 26px rgba(0, 0, 0, .42);
+      transition: opacity .12s ease;
+    }
+
+    .tooltip.show {
+      opacity: 1;
+    }
+
+    .tooltip strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .tooltip span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    @media (max-width: 1380px) {
+      header,
+      .layout {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .legend-panel {
+        grid-column: 1 / -1;
+        position: static;
+        max-height: none;
+      }
+
+      .legend-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 16px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        width: min(calc(100vw - 18px), 760px);
+        padding-top: 12px;
+      }
+
+      header,
+      .layout,
+      .study-meta,
+      .metrics,
+      .form-grid,
+      .stat-grid,
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .legend-list {
+        grid-template-columns: 1fr;
+      }
+
+      .legend-row {
+        grid-template-columns: 16px minmax(64px, 1fr) 52px 52px 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>评论 IP属地与省份人口相关性</h1>
+        <p class="subline">
+          研究口径：只使用平台公开显示的 IP属地省份聚合计数，不采集真实 IP、用户名、主页、头像或评论原文。
+          人口基准来自
+          <a href="https://www.stats.gov.cn/sj/zxfb/202302/t20230203_1901083.html" target="_blank" rel="noreferrer">国家统计局第七次全国人口普查公报（第三号）</a>；
+          隐私边界参考
+          <a href="https://flk.npc.gov.cn/detail2.html?ZmY4MDgxODE3YjY0NzJhMzAxN2I2NTZjYzIwNDAwNDQ=" target="_blank" rel="noreferrer">《个人信息保护法》</a>。
+        </p>
+      </div>
+      <div class="metrics" aria-label="核心指标">
+        <div class="metric">
+          <span>31省评论样本</span>
+          <strong id="sampleMetric">-</strong>
+        </div>
+        <div class="metric">
+          <span>Pearson 相关</span>
+          <strong id="pearsonMetric">-</strong>
+        </div>
+        <div class="metric">
+          <span>Spearman 相关</span>
+          <strong id="spearmanMetric">-</strong>
+        </div>
+        <div class="metric">
+          <span>最大代表性倍率</span>
+          <strong id="topLiftMetric">-</strong>
+        </div>
+      </div>
+    </header>
+
+    <section class="study-meta" aria-label="数据元信息">
+      <div class="mini-card">
+        <span>目标内容</span>
+        <strong id="sourceTitleMetric">-</strong>
+      </div>
+      <div class="mini-card">
+        <span>平台</span>
+        <strong id="platformMetric">-</strong>
+      </div>
+      <div class="mini-card">
+        <span>采样时间</span>
+        <strong id="collectedAtMetric">-</strong>
+      </div>
+      <div class="mini-card">
+        <span>排除项</span>
+        <strong id="excludedMetric">-</strong>
+      </div>
+      <div class="mini-card">
+        <span>抽样方式</span>
+        <strong id="samplingMethodMetric">-</strong>
+      </div>
+    </section>
+
+    <main class="layout">
+      <section class="panel chart-panel" aria-labelledby="squareTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="squareTitle">双层方饼图</h2>
+            <span class="panel-kicker">人口基准 vs 评论样本</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <svg id="doubleSquareChart" viewBox="0 0 780 760" role="img" aria-label="人口分布和评论属地分布双层方饼图"></svg>
+        </div>
+      </section>
+
+      <div class="stack">
+        <section class="panel chart-panel" aria-labelledby="scatterTitle">
+          <div class="panel-head">
+            <div class="panel-title">
+              <h2 id="scatterTitle">人口与评论数散点图</h2>
+              <span class="panel-kicker">含线性趋势线</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <svg id="scatterChart" viewBox="0 0 760 430" role="img" aria-label="省份人口数量与评论数量散点图"></svg>
+          </div>
+        </section>
+
+        <section class="panel chart-panel" aria-labelledby="shareTitle">
+          <div class="panel-head">
+            <div class="panel-title">
+              <h2 id="shareTitle">相对偏离率</h2>
+              <span class="panel-kicker">评论占比 / 人口占比 - 1</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <svg id="shareChart" viewBox="0 0 760 820" role="img" aria-label="各省评论占比相对人口占比的百分比偏离图"></svg>
+          </div>
+        </section>
+
+        <section class="panel chart-panel" aria-labelledby="deviationTitle">
+          <div class="panel-head">
+            <div class="panel-title">
+              <h2 id="deviationTitle">偏离度</h2>
+              <span class="panel-kicker">按带符号偏离排序</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <svg id="deviationChart" viewBox="0 0 760 820" role="img" aria-label="各省评论占比相对人口占比偏离条形图"></svg>
+          </div>
+        </section>
+      </div>
+
+      <aside class="panel legend-panel" aria-labelledby="legendTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="legendTitle">省份列表</h2>
+            <span class="panel-kicker">排序与高亮</span>
+          </div>
+          <div class="segmented" role="group" aria-label="列表排序">
+            <button type="button" class="active" data-sort="deviation">偏离</button>
+            <button type="button" data-sort="comments">评论</button>
+            <button type="button" data-sort="population">人口</button>
+            <button type="button" data-sort="lift">倍率</button>
+          </div>
+        </div>
+        <div class="detail" id="detailBox" aria-live="polite"></div>
+        <ol class="legend-list" id="legendList"></ol>
+      </aside>
+
+      <section class="panel" aria-labelledby="statsTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="statsTitle">统计检验</h2>
+            <span class="panel-kicker">探索性结论</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <span>Pearson</span>
+              <strong id="pearsonCard">-</strong>
+              <p>衡量人口数量与评论数量的线性相关。</p>
+            </div>
+            <div class="stat-card">
+              <span>Spearman</span>
+              <strong id="spearmanCard">-</strong>
+              <p>衡量人口排名与评论量排名的单调相关。</p>
+            </div>
+            <div class="stat-card">
+              <span>卡方拟合优度</span>
+              <strong id="chiCard">-</strong>
+              <p id="chiNote">-</p>
+            </div>
+            <div class="stat-card">
+              <span>结论边界</span>
+              <strong id="scopeCard">-</strong>
+              <p>只解释本样本评论区，不外推全网用户分布。</p>
+            </div>
+          </div>
+          <ul class="validation-list" id="validationList"></ul>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="inputTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="inputTitle">评论属地数据</h2>
+            <span class="panel-kicker">粘贴 CSV 聚合表</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <label>
+              目标内容
+              <input id="sourceTitleInput" type="text">
+            </label>
+            <label>
+              平台
+              <input id="platformInput" type="text">
+            </label>
+            <label>
+              采样时间
+              <input id="collectedAtInput" type="text">
+            </label>
+            <label>
+              排除项数量
+              <input id="excludedInput" type="number" min="0" step="1">
+            </label>
+          </div>
+          <label>
+            CSV 格式：province,comment_count
+            <textarea id="csvInput" spellcheck="false"></textarea>
+          </label>
+          <div class="action-row">
+            <button class="action-button primary" type="button" id="applyCsvButton">应用 CSV</button>
+            <button class="action-button" type="button" id="resetButton">恢复示例数据</button>
+            <button class="action-button" type="button" id="templateButton">填入模板</button>
+          </div>
+          <p class="note small" id="inputNote">
+            “未知、海外、港澳台、无属地”等不进入 31 省相关性计算，请把数量填入排除项。
+          </p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="samplingTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="samplingTitle">低偏差抽样设计</h2>
+            <span class="panel-kicker">扩大样本后的默认口径</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <ul class="research-list">
+            <li>内容分层<span>从热歌、飙升、新歌、原创、古典、电音、中文说唱、AI歌曲、欧美R&amp;B 9 个公开榜单采样，避免单一热歌榜支配结果。</span></li>
+            <li>等额限额<span>每个榜单最多 24 首歌，歌曲去重；每首歌设评论数上限，避免一个爆款评论区压过其他内容。</span></li>
+            <li>时间窗口<span>每首歌按评论分页位置抽取最新、中段、较早 3 个窗口，降低只看最新评论造成的时间偏差。</span></li>
+            <li>最小化保存<span>采集阶段只读取公开 IP属地省份并立即聚合；不保存用户名、主页、头像、评论原文、真实 IP 或评论级记录。</span></li>
+            <li>剩余边界<span>样本仍是网易云音乐平台内样本，不代表全网；音乐平台用户结构、榜单受众、评论意愿仍会带来系统性偏差。</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="researchTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="researchTitle">后续研究目标</h2>
+            <span class="panel-kicker">可扩展方向</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <ul class="research-list">
+            <li>代表性偏差<span>识别哪些省份在该评论样本中过度或不足代表。</span></li>
+            <li>平台/内容偏差<span>同一主题跨平台对比，或同平台不同内容类型对比。</span></li>
+            <li>主题地域性<span>本地新闻、全国新闻、娱乐内容的省份偏离模式是否不同。</span></li>
+            <li>时间变化<span>比较发布后 1 小时、6 小时、24 小时的属地结构变化。</span></li>
+            <li>情绪扩展<span>在严格脱敏下研究省份层面的情绪或主题差异。</span></li>
+            <li>省级解释变量<span>加入人均 GDP、互联网普及率、年龄结构，解释人口之外的评论量差异。</span></li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    const rawData = [
+      { name: "北京市", short: "北京", region: "东部", population: 21893095 },
+      { name: "天津市", short: "天津", region: "东部", population: 13866009 },
+      { name: "河北省", short: "河北", region: "东部", population: 74610235 },
+      { name: "山西省", short: "山西", region: "中部", population: 34915616 },
+      { name: "内蒙古自治区", short: "内蒙古", region: "西部", population: 24049155 },
+      { name: "辽宁省", short: "辽宁", region: "东北", population: 42591407 },
+      { name: "吉林省", short: "吉林", region: "东北", population: 24073453 },
+      { name: "黑龙江省", short: "黑龙江", region: "东北", population: 31850088 },
+      { name: "上海市", short: "上海", region: "东部", population: 24870895 },
+      { name: "江苏省", short: "江苏", region: "东部", population: 84748016 },
+      { name: "浙江省", short: "浙江", region: "东部", population: 64567588 },
+      { name: "安徽省", short: "安徽", region: "中部", population: 61027171 },
+      { name: "福建省", short: "福建", region: "东部", population: 41540086 },
+      { name: "江西省", short: "江西", region: "中部", population: 45188635 },
+      { name: "山东省", short: "山东", region: "东部", population: 101527453 },
+      { name: "河南省", short: "河南", region: "中部", population: 99365519 },
+      { name: "湖北省", short: "湖北", region: "中部", population: 57752557 },
+      { name: "湖南省", short: "湖南", region: "中部", population: 66444864 },
+      { name: "广东省", short: "广东", region: "东部", population: 126012510 },
+      { name: "广西壮族自治区", short: "广西", region: "西部", population: 50126804 },
+      { name: "海南省", short: "海南", region: "东部", population: 10081232 },
+      { name: "重庆市", short: "重庆", region: "西部", population: 32054159 },
+      { name: "四川省", short: "四川", region: "西部", population: 83674866 },
+      { name: "贵州省", short: "贵州", region: "西部", population: 38562148 },
+      { name: "云南省", short: "云南", region: "西部", population: 47209277 },
+      { name: "西藏自治区", short: "西藏", region: "西部", population: 3648100 },
+      { name: "陕西省", short: "陕西", region: "西部", population: 39528999 },
+      { name: "甘肃省", short: "甘肃", region: "西部", population: 25019831 },
+      { name: "青海省", short: "青海", region: "西部", population: 5923957 },
+      { name: "宁夏回族自治区", short: "宁夏", region: "西部", population: 7202654 },
+      { name: "新疆维吾尔自治区", short: "新疆", region: "西部", population: 25852345 }
+    ];
+
+    const defaultMeta = {
+      source_title: "网易云音乐9个公开榜单分层抽样：每榜最多24首、每首最多3个评论时间窗口、每窗口80条",
+      platform: "网易云音乐",
+      collected_at: "2026/6/16 13:25:30 +08:00",
+      excluded_or_other: 645,
+      sampling_method: "榜单分层等额抽样；歌曲去重；单曲限额；评论分页位置按最新/中段/较早三窗口系统抽样；仅保存31省聚合计数。"
+    };
+
+    const defaultCommentData = [
+      { province: "北京", comment_count: 1240 },
+      { province: "天津", comment_count: 564 },
+      { province: "河北", comment_count: 1357 },
+      { province: "山西", comment_count: 590 },
+      { province: "内蒙古", comment_count: 350 },
+      { province: "辽宁", comment_count: 851 },
+      { province: "吉林", comment_count: 432 },
+      { province: "黑龙江", comment_count: 540 },
+      { province: "上海", comment_count: 1302 },
+      { province: "江苏", comment_count: 2574 },
+      { province: "浙江", comment_count: 2146 },
+      { province: "安徽", comment_count: 1281 },
+      { province: "福建", comment_count: 1263 },
+      { province: "江西", comment_count: 946 },
+      { province: "山东", comment_count: 2201 },
+      { province: "河南", comment_count: 1958 },
+      { province: "湖北", comment_count: 1249 },
+      { province: "湖南", comment_count: 1350 },
+      { province: "广东", comment_count: 4871 },
+      { province: "广西", comment_count: 1011 },
+      { province: "海南", comment_count: 261 },
+      { province: "重庆", comment_count: 797 },
+      { province: "四川", comment_count: 1766 },
+      { province: "贵州", comment_count: 558 },
+      { province: "云南", comment_count: 836 },
+      { province: "西藏", comment_count: 29 },
+      { province: "陕西", comment_count: 933 },
+      { province: "甘肃", comment_count: 324 },
+      { province: "青海", comment_count: 87 },
+      { province: "宁夏", comment_count: 140 },
+      { province: "新疆", comment_count: 632 }
+    ];
+
+    const palette = [
+      "#cfaa55", "#5b9dbc", "#d46b49", "#80a94b", "#9a72d4", "#c85678",
+      "#58a879", "#d2ba63", "#6178bd", "#b9564c", "#69aaa5", "#b98651",
+      "#7ea95e", "#b969a5", "#8f974a", "#d89444", "#5796b0", "#a35c58",
+      "#4f9b70", "#ba9368", "#8870b4", "#c96a8d", "#82a6d7", "#df9d54",
+      "#4b908c", "#a87953", "#9aa14a", "#d56e5a", "#6e8ec8", "#c9a459",
+      "#55a58e"
+    ];
+
+    const provinceAliases = new Map();
+    const storageKey = "province-comment-dashboard-v3-stratified-9-lists";
+    const populationTotal = rawData.reduce((sum, item) => sum + item.population, 0);
+    const numberFormatter = new Intl.NumberFormat("zh-CN");
+    const tooltip = document.getElementById("tooltip");
+    let commentMeta = { ...defaultMeta };
+    let commentData = defaultCommentData.map((item) => ({ ...item }));
+    let rows = [];
+    let stats = {};
+    let pinnedIndex = null;
+    let sortMode = "deviation";
+
+    rawData.forEach((item) => {
+      const aliases = new Set([
+        item.name,
+        item.short,
+        item.name.replace(/省|市|自治区|壮族|回族|维吾尔/g, ""),
+        item.short.replace(/省|市|自治区|壮族|回族|维吾尔/g, "")
+      ]);
+      aliases.forEach((alias) => provinceAliases.set(cleanProvince(alias), item.name));
+    });
+
+    function cleanProvince(value) {
+      return String(value || "")
+        .trim()
+        .replace(/^IP属地[:：]?/i, "")
+        .replace(/[\s"'“”‘’]/g, "")
+        .replace(/省|市|自治区|壮族|回族|维吾尔/g, "");
+    }
+
+    function normalizeProvince(value) {
+      return provinceAliases.get(cleanProvince(value)) || null;
+    }
+
+    function formatWan(value) {
+      return `${(value / 10000).toLocaleString("zh-CN", { maximumFractionDigits: 1 })}万人`;
+    }
+
+    function formatPercent(value, digits = 2) {
+      return `${value.toFixed(digits)}%`;
+    }
+
+    function formatSignedPercent(value, digits = 2) {
+      return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}pp`;
+    }
+
+    function formatCorrelation(value) {
+      return Number.isFinite(value) ? value.toFixed(3) : "N/A";
+    }
+
+    function createSvgElement(tag, attrs) {
+      const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      Object.entries(attrs || {}).forEach(([key, value]) => {
+        element.setAttribute(key, value);
+      });
+      return element;
+    }
+
+    function parseCsv(text) {
+      const counts = new Map();
+      const errors = [];
+      const lines = String(text || "").split(/\r?\n/);
+      lines.forEach((line, lineIndex) => {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith("#")) return;
+        const parts = trimmed.split(/,|\t|，/).map((part) => part.trim());
+        if (lineIndex === 0 && /province|省份/i.test(parts[0]) && /count|数量|评论/i.test(parts[1] || "")) return;
+        if (parts.length < 2) {
+          errors.push(`第 ${lineIndex + 1} 行缺少计数字段：${trimmed}`);
+          return;
+        }
+        const normalized = normalizeProvince(parts[0]);
+        const count = Number(parts[1].replace(/,/g, ""));
+        if (!normalized) {
+          errors.push(`无法识别省份：${parts[0]}`);
+          return;
+        }
+        if (!Number.isFinite(count) || count < 0) {
+          errors.push(`计数无效：${trimmed}`);
+          return;
+        }
+        counts.set(normalized, (counts.get(normalized) || 0) + Math.round(count));
+      });
+      const parsed = rawData.map((item) => ({
+        province: item.short,
+        comment_count: counts.get(item.name) || 0
+      }));
+      return { parsed, errors };
+    }
+
+    function toCsv(data) {
+      return ["province,comment_count", ...data.map((item) => `${item.province},${item.comment_count}`)].join("\n");
+    }
+
+    function buildRows() {
+      const counts = new Map();
+      commentData.forEach((item) => {
+        const normalized = normalizeProvince(item.province);
+        if (!normalized) return;
+        counts.set(normalized, (counts.get(normalized) || 0) + Number(item.comment_count || 0));
+      });
+      const commentTotal = [...counts.values()].reduce((sum, value) => sum + value, 0);
+      const sortedByPopulation = [...rawData].sort((a, b) => b.population - a.population);
+      const rowsBase = rawData.map((item, index) => {
+        const comments = counts.get(item.name) || 0;
+        const populationShare = item.population / populationTotal * 100;
+        const commentShare = commentTotal > 0 ? comments / commentTotal * 100 : 0;
+        return {
+          ...item,
+          index,
+          color: palette[index % palette.length],
+          comments,
+          populationShare,
+          commentShare,
+          deviation: commentShare - populationShare,
+          lift: populationShare > 0 ? commentShare / populationShare : 0,
+          commentsPerMillion: item.population > 0 ? comments / (item.population / 1000000) : 0,
+          populationRank: sortedByPopulation.findIndex((entry) => entry.name === item.name) + 1
+        };
+      });
+      const sortedByComments = [...rowsBase].sort((a, b) => b.comments - a.comments || b.population - a.population);
+      rowsBase.forEach((row) => {
+        row.commentRank = sortedByComments.findIndex((entry) => entry.name === row.name) + 1;
+      });
+      return rowsBase;
+    }
+
+    function rankValues(values) {
+      const sorted = values.map((value, index) => ({ value, index })).sort((a, b) => a.value - b.value);
+      const ranks = Array(values.length);
+      let i = 0;
+      while (i < sorted.length) {
+        let j = i + 1;
+        while (j < sorted.length && sorted[j].value === sorted[i].value) j += 1;
+        const averageRank = (i + 1 + j) / 2;
+        for (let k = i; k < j; k += 1) ranks[sorted[k].index] = averageRank;
+        i = j;
+      }
+      return ranks;
+    }
+
+    function correlation(xs, ys) {
+      const n = xs.length;
+      const meanX = xs.reduce((sum, value) => sum + value, 0) / n;
+      const meanY = ys.reduce((sum, value) => sum + value, 0) / n;
+      let num = 0;
+      let denX = 0;
+      let denY = 0;
+      for (let i = 0; i < n; i += 1) {
+        const dx = xs[i] - meanX;
+        const dy = ys[i] - meanY;
+        num += dx * dy;
+        denX += dx * dx;
+        denY += dy * dy;
+      }
+      return denX > 0 && denY > 0 ? num / Math.sqrt(denX * denY) : NaN;
+    }
+
+    function linearRegression(xs, ys) {
+      const n = xs.length;
+      const meanX = xs.reduce((sum, value) => sum + value, 0) / n;
+      const meanY = ys.reduce((sum, value) => sum + value, 0) / n;
+      let num = 0;
+      let den = 0;
+      for (let i = 0; i < n; i += 1) {
+        num += (xs[i] - meanX) * (ys[i] - meanY);
+        den += (xs[i] - meanX) ** 2;
+      }
+      const slope = den > 0 ? num / den : 0;
+      return { slope, intercept: meanY - slope * meanX };
+    }
+
+    function logGamma(z) {
+      const coefficients = [
+        676.5203681218851, -1259.1392167224028, 771.32342877765313,
+        -176.61502916214059, 12.507343278686905, -0.13857109526572012,
+        9.9843695780195716e-6, 1.5056327351493116e-7
+      ];
+      if (z < 0.5) return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
+      z -= 1;
+      let x = 0.99999999999980993;
+      for (let i = 0; i < coefficients.length; i += 1) x += coefficients[i] / (z + i + 1);
+      const t = z + coefficients.length - 0.5;
+      return 0.9189385332046727 + (z + 0.5) * Math.log(t) - t + Math.log(x);
+    }
+
+    function gammaQ(a, x) {
+      if (x < 0 || a <= 0) return NaN;
+      if (x === 0) return 1;
+      const eps = 1e-12;
+      const fpmin = 1e-300;
+      if (x < a + 1) {
+        let ap = a;
+        let del = 1 / a;
+        let sum = del;
+        for (let n = 1; n <= 1000; n += 1) {
+          ap += 1;
+          del *= x / ap;
+          sum += del;
+          if (Math.abs(del) < Math.abs(sum) * eps) {
+            const p = sum * Math.exp(-x + a * Math.log(x) - logGamma(a));
+            return Math.max(0, Math.min(1, 1 - p));
+          }
+        }
+      }
+      let b = x + 1 - a;
+      let c = 1 / fpmin;
+      let d = 1 / b;
+      let h = d;
+      for (let i = 1; i <= 1000; i += 1) {
+        const an = -i * (i - a);
+        b += 2;
+        d = an * d + b;
+        if (Math.abs(d) < fpmin) d = fpmin;
+        c = b + an / c;
+        if (Math.abs(c) < fpmin) c = fpmin;
+        d = 1 / d;
+        const del = d * c;
+        h *= del;
+        if (Math.abs(del - 1) < eps) break;
+      }
+      return Math.max(0, Math.min(1, Math.exp(-x + a * Math.log(x) - logGamma(a)) * h));
+    }
+
+    function computeStats(currentRows) {
+      const populations = currentRows.map((row) => row.population);
+      const comments = currentRows.map((row) => row.comments);
+      const totalComments = comments.reduce((sum, value) => sum + value, 0);
+      const pearson = correlation(populations, comments);
+      const spearman = correlation(rankValues(populations), rankValues(comments));
+      let chiSquare = 0;
+      currentRows.forEach((row) => {
+        const expected = totalComments * (row.population / populationTotal);
+        if (expected > 0) chiSquare += (row.comments - expected) ** 2 / expected;
+      });
+      const degreesOfFreedom = currentRows.length - 1;
+      const pValue = totalComments > 0 ? gammaQ(degreesOfFreedom / 2, chiSquare / 2) : NaN;
+      const regression = linearRegression(populations, comments);
+      const over = [...currentRows].sort((a, b) => b.deviation - a.deviation).slice(0, 5);
+      const under = [...currentRows].sort((a, b) => a.deviation - b.deviation).slice(0, 5);
+      const topLift = [...currentRows].filter((row) => row.comments > 0).sort((a, b) => b.lift - a.lift)[0];
+      return { pearson, spearman, chiSquare, degreesOfFreedom, pValue, regression, totalComments, over, under, topLift };
+    }
+
+    function squarifiedTreemap(items, x, y, width, height, valueKey) {
+      const positiveItems = items.filter((item) => item[valueKey] > 0);
+      const total = positiveItems.reduce((sum, item) => sum + item[valueKey], 0);
+      if (!total) return [];
+
+      const areaScale = (width * height) / total;
+      const remainingItems = positiveItems
+        .map((item) => ({ ...item, area: item[valueKey] * areaScale }))
+        .sort((a, b) => b.area - a.area);
+      const rects = [];
+      const gap = 2.4;
+      const minSide = 2;
+      let frame = { x, y, width, height };
+
+      function worstAspect(row, side) {
+        if (!row.length || side <= 0) return Infinity;
+        const rowArea = row.reduce((sum, item) => sum + item.area, 0);
+        const maxArea = Math.max(...row.map((item) => item.area));
+        const minArea = Math.min(...row.map((item) => item.area));
+        return Math.max(
+          (side ** 2 * maxArea) / (rowArea ** 2),
+          (rowArea ** 2) / (side ** 2 * minArea)
+        );
+      }
+
+      function pushRect(item, rect) {
+        const inset = Math.min(gap / 2, rect.width * 0.08, rect.height * 0.08);
+        rects.push({
+          ...item,
+          x: rect.x + inset,
+          y: rect.y + inset,
+          width: Math.max(minSide, rect.width - inset * 2),
+          height: Math.max(minSide, rect.height - inset * 2)
+        });
+      }
+
+      function layoutRow(row) {
+        const rowArea = row.reduce((sum, item) => sum + item.area, 0);
+        if (frame.width >= frame.height) {
+          const columnWidth = rowArea / frame.height;
+          let cursorY = frame.y;
+          row.forEach((item) => {
+            const itemHeight = item.area / columnWidth;
+            pushRect(item, { x: frame.x, y: cursorY, width: columnWidth, height: itemHeight });
+            cursorY += itemHeight;
+          });
+          frame = { x: frame.x + columnWidth, y: frame.y, width: frame.width - columnWidth, height: frame.height };
+        } else {
+          const rowHeight = rowArea / frame.width;
+          let cursorX = frame.x;
+          row.forEach((item) => {
+            const itemWidth = item.area / rowHeight;
+            pushRect(item, { x: cursorX, y: frame.y, width: itemWidth, height: rowHeight });
+            cursorX += itemWidth;
+          });
+          frame = { x: frame.x, y: frame.y + rowHeight, width: frame.width, height: frame.height - rowHeight };
+        }
+      }
+
+      let row = [];
+      while (remainingItems.length) {
+        const item = remainingItems[0];
+        const side = Math.min(frame.width, frame.height);
+        const currentWorst = worstAspect(row, side);
+        const nextWorst = worstAspect([...row, item], side);
+        if (!row.length || nextWorst <= currentWorst) {
+          row.push(item);
+          remainingItems.shift();
+        } else {
+          layoutRow(row);
+          row = [];
+        }
+      }
+      if (row.length) layoutRow(row);
+      return rects;
+    }
+
+    function attachInteractiveHandlers(element, row) {
+      element.addEventListener("mouseenter", (event) => {
+        highlight(row.index);
+        showTooltip(event, row);
+      });
+      element.addEventListener("mousemove", (event) => showTooltip(event, row));
+      element.addEventListener("mouseleave", () => {
+        hideTooltip();
+        if (pinnedIndex === null) clearHighlight();
+      });
+      element.addEventListener("click", () => {
+        pinnedIndex = pinnedIndex === row.index ? null : row.index;
+        if (pinnedIndex === null) {
+          clearHighlight();
+        } else {
+          highlight(row.index);
+        }
+      });
+    }
+
+    function renderDoubleSquare() {
+      const svg = document.getElementById("doubleSquareChart");
+      svg.innerHTML = "";
+      const x = 20;
+      const width = 740;
+      const height = 282;
+      const populationRects = squarifiedTreemap([...rows].sort((a, b) => b.population - a.population), x, 58, width, height, "population");
+      const commentRects = squarifiedTreemap([...rows].sort((a, b) => b.comments - a.comments), x, 418, width, height, "comments");
+
+      [
+        { label: "人口基准", sub: "第七次全国人口普查常住人口", y: 26 },
+        { label: "评论样本", sub: "公开 IP属地省份聚合", y: 386 }
+      ].forEach((title) => {
+        const label = createSvgElement("text", { x, y: title.y, class: "chart-label", "font-size": 20 });
+        label.textContent = title.label;
+        svg.appendChild(label);
+        const sub = createSvgElement("text", { x: x + 92, y: title.y, class: "chart-muted" });
+        sub.textContent = title.sub;
+        svg.appendChild(sub);
+      });
+
+      function drawRects(rects, valueKey, shareKey, y, chartLabel) {
+        svg.appendChild(createSvgElement("rect", {
+          x: x - 4,
+          y: y - 4,
+          width: width + 8,
+          height: height + 8,
+          fill: "rgba(0,0,0,.26)",
+          stroke: "rgba(236,202,123,.34)",
+          "stroke-width": 2
+        }));
+        rects.forEach((row) => {
+          const rect = createSvgElement("rect", {
+            x: row.x.toFixed(2),
+            y: row.y.toFixed(2),
+            width: row.width.toFixed(2),
+            height: row.height.toFixed(2),
+            fill: row.color,
+            class: "tile",
+            "data-idx": row.index
+          });
+          attachInteractiveHandlers(rect, row);
+          svg.appendChild(rect);
+          if (row.width > 76 && row.height > 42) {
+            const fontSize = Math.max(11, Math.min(17, Math.sqrt(row.width * row.height) / 13));
+            const text = createSvgElement("text", {
+              x: (row.x + 8).toFixed(2),
+              y: (row.y + 18).toFixed(2),
+              class: "tile-label",
+              "font-size": fontSize.toFixed(1)
+            });
+            const name = createSvgElement("tspan", { x: (row.x + 8).toFixed(2) });
+            name.textContent = row.short;
+            const share = createSvgElement("tspan", {
+              x: (row.x + 8).toFixed(2),
+              dy: "1.25em",
+              class: "chart-muted"
+            });
+            share.textContent = `${formatPercent(row[shareKey], 1)}`;
+            text.appendChild(name);
+            text.appendChild(share);
+            svg.appendChild(text);
+          }
+        });
+        if (!rects.length) {
+          const empty = createSvgElement("text", { x: 390, y: y + 148, "text-anchor": "middle", class: "chart-muted", "font-size": 16 });
+          empty.textContent = `${chartLabel}暂无可绘制数据`;
+          svg.appendChild(empty);
+        }
+      }
+
+      drawRects(populationRects, "population", "populationShare", 58, "人口");
+      drawRects(commentRects, "comments", "commentShare", 418, "评论");
+    }
+
+    function renderScatter() {
+      const svg = document.getElementById("scatterChart");
+      svg.innerHTML = "";
+      const margin = { left: 72, right: 26, top: 26, bottom: 58 };
+      const width = 760 - margin.left - margin.right;
+      const height = 430 - margin.top - margin.bottom;
+      const maxX = Math.max(...rows.map((row) => row.population));
+      const maxY = Math.max(1, ...rows.map((row) => row.comments));
+      const scaleX = (value) => margin.left + (value / maxX) * width;
+      const scaleY = (value) => margin.top + height - (value / maxY) * height;
+
+      for (let i = 0; i <= 5; i += 1) {
+        const x = margin.left + (i / 5) * width;
+        const y = margin.top + (i / 5) * height;
+        svg.appendChild(createSvgElement("line", { x1: x, y1: margin.top, x2: x, y2: margin.top + height, class: "grid-line" }));
+        svg.appendChild(createSvgElement("line", { x1: margin.left, y1: y, x2: margin.left + width, y2: y, class: "grid-line" }));
+      }
+      svg.appendChild(createSvgElement("line", { x1: margin.left, y1: margin.top + height, x2: margin.left + width, y2: margin.top + height, class: "axis" }));
+      svg.appendChild(createSvgElement("line", { x1: margin.left, y1: margin.top, x2: margin.left, y2: margin.top + height, class: "axis" }));
+
+      const xLabel = createSvgElement("text", { x: margin.left + width / 2, y: 414, "text-anchor": "middle", class: "axis-label" });
+      xLabel.textContent = "常住人口";
+      svg.appendChild(xLabel);
+      const yLabel = createSvgElement("text", { x: 18, y: 210, transform: "rotate(-90 18 210)", "text-anchor": "middle", class: "axis-label" });
+      yLabel.textContent = "评论数";
+      svg.appendChild(yLabel);
+
+      const trendStartX = 0;
+      const trendEndX = maxX;
+      const startY = Math.max(0, stats.regression.intercept + stats.regression.slope * trendStartX);
+      const endY = Math.max(0, stats.regression.intercept + stats.regression.slope * trendEndX);
+      svg.appendChild(createSvgElement("line", {
+        x1: scaleX(trendStartX),
+        y1: scaleY(startY),
+        x2: scaleX(trendEndX),
+        y2: scaleY(endY),
+        stroke: "rgba(236,202,123,.78)",
+        "stroke-width": 2.2,
+        "stroke-dasharray": "7 6"
+      }));
+
+      rows.forEach((row) => {
+        const radius = Math.max(5, Math.min(12, 4 + Math.sqrt(row.comments + 1) / 3.2));
+        const dot = createSvgElement("circle", {
+          cx: scaleX(row.population).toFixed(2),
+          cy: scaleY(row.comments).toFixed(2),
+          r: radius.toFixed(2),
+          fill: row.color,
+          class: "dot",
+          "data-idx": row.index
+        });
+        attachInteractiveHandlers(dot, row);
+        svg.appendChild(dot);
+        if (Math.abs(row.deviation) >= 2.2 || row.comments === 0) {
+          const label = createSvgElement("text", {
+            x: (scaleX(row.population) + 10).toFixed(2),
+            y: (scaleY(row.comments) - 8).toFixed(2),
+            class: "chart-muted"
+          });
+          label.textContent = row.short;
+          svg.appendChild(label);
+        }
+      });
+
+      const xMaxText = createSvgElement("text", { x: margin.left + width, y: 398, "text-anchor": "end", class: "chart-muted" });
+      xMaxText.textContent = formatWan(maxX);
+      svg.appendChild(xMaxText);
+      const yMaxText = createSvgElement("text", { x: margin.left - 10, y: margin.top + 4, "text-anchor": "end", class: "chart-muted" });
+      yMaxText.textContent = numberFormatter.format(maxY);
+      svg.appendChild(yMaxText);
+    }
+
+    function renderShareChart() {
+      const svg = document.getElementById("shareChart");
+      svg.innerHTML = "";
+      const relativeRows = rows.map((row) => ({
+        ...row,
+        relativeDeviation: row.populationShare > 0 ? (row.commentShare / row.populationShare - 1) * 100 : 0
+      }));
+      const sorted = relativeRows.sort((a, b) => b.relativeDeviation - a.relativeDeviation || b.comments - a.comments);
+      const margin = { left: 90, right: 84, top: 44, bottom: 42 };
+      const width = 760 - margin.left - margin.right;
+      const rowHeight = 24;
+      const zeroX = margin.left + width / 2;
+      const maxAbs = Math.max(10, ...sorted.map((row) => Math.abs(row.relativeDeviation)));
+      const axisMax = Math.ceil(maxAbs / 25) * 25;
+      const scale = (value) => zeroX + (value / axisMax) * (width / 2);
+      const formatRelative = (value) => `${value > 0 ? "+" : ""}${value.toFixed(Math.abs(value) >= 100 ? 0 : 1)}%`;
+
+      [-axisMax, -axisMax / 2, 0, axisMax / 2, axisMax].forEach((value) => {
+        const x = scale(value);
+        svg.appendChild(createSvgElement("line", {
+          x1: x,
+          y1: margin.top - 10,
+          x2: x,
+          y2: margin.top + sorted.length * rowHeight + 8,
+          class: "grid-line"
+        }));
+        const tick = createSvgElement("text", { x, y: 26, "text-anchor": "middle", class: "chart-muted" });
+        tick.textContent = `${value.toFixed(0)}%`;
+        svg.appendChild(tick);
+      });
+
+      svg.appendChild(createSvgElement("line", {
+        x1: zeroX,
+        y1: margin.top - 10,
+        x2: zeroX,
+        y2: margin.top + sorted.length * rowHeight + 8,
+        class: "zero-line"
+      }));
+      const higherHint = createSvgElement("text", { x: zeroX + 8, y: 16, class: "chart-muted" });
+      higherHint.textContent = "评论占比高于人口占比";
+      svg.appendChild(higherHint);
+      const lowerHint = createSvgElement("text", { x: zeroX - 8, y: 16, "text-anchor": "end", class: "chart-muted" });
+      lowerHint.textContent = "评论占比低于人口占比";
+      svg.appendChild(lowerHint);
+
+      sorted.forEach((row, i) => {
+        const y = margin.top + i * rowHeight;
+        const len = Math.abs(scale(row.relativeDeviation) - zeroX);
+        const x = row.relativeDeviation >= 0 ? zeroX : zeroX - len;
+        const label = createSvgElement("text", { x: margin.left - 10, y: y + 16, "text-anchor": "end", class: "chart-muted" });
+        label.textContent = row.short;
+        svg.appendChild(label);
+
+        const bar = createSvgElement("rect", {
+          x: x.toFixed(2),
+          y: y + 4,
+          width: Math.max(2, len).toFixed(2),
+          height: 14,
+          rx: 0,
+          fill: row.relativeDeviation >= 0 ? "var(--good)" : "var(--bad)",
+          class: "bar-segment",
+          "data-idx": row.index
+        });
+        attachInteractiveHandlers(bar, row);
+        svg.appendChild(bar);
+
+        const value = createSvgElement("text", {
+          x: row.relativeDeviation >= 0 ? x + len + 8 : x - 8,
+          y: y + 16,
+          "text-anchor": row.relativeDeviation >= 0 ? "start" : "end",
+          class: "chart-muted"
+        });
+        value.textContent = formatRelative(row.relativeDeviation);
+        svg.appendChild(value);
+      });
+
+      const axisLabel = createSvgElement("text", {
+        x: margin.left + width / 2,
+        y: margin.top + sorted.length * rowHeight + 34,
+        "text-anchor": "middle",
+        class: "axis-label"
+      });
+      axisLabel.textContent = "相对偏离率 = 评论占比 / 人口占比 - 1";
+      svg.appendChild(axisLabel);
+    }
+
+    function renderDeviation() {
+      const svg = document.getElementById("deviationChart");
+      svg.innerHTML = "";
+      const sorted = [...rows].sort((a, b) => b.deviation - a.deviation || b.comments - a.comments);
+      const margin = { left: 90, right: 76, top: 36, bottom: 34 };
+      const width = 760 - margin.left - margin.right;
+      const rowHeight = 24;
+      const zeroX = margin.left + width / 2;
+      const maxAbs = Math.max(0.5, ...sorted.map((row) => Math.abs(row.deviation)));
+      const scale = (value) => (value / maxAbs) * (width / 2);
+
+      svg.appendChild(createSvgElement("line", {
+        x1: zeroX,
+        y1: margin.top - 8,
+        x2: zeroX,
+        y2: margin.top + sorted.length * rowHeight + 8,
+        class: "zero-line"
+      }));
+
+      const topHint = createSvgElement("text", { x: zeroX + 8, y: 20, class: "chart-muted" });
+      topHint.textContent = "高于人口基准";
+      svg.appendChild(topHint);
+      const bottomHint = createSvgElement("text", { x: zeroX - 8, y: 20, "text-anchor": "end", class: "chart-muted" });
+      bottomHint.textContent = "低于人口基准";
+      svg.appendChild(bottomHint);
+
+      sorted.forEach((row, i) => {
+        const y = margin.top + i * rowHeight;
+        const len = Math.abs(scale(row.deviation));
+        const x = row.deviation >= 0 ? zeroX : zeroX - len;
+        const label = createSvgElement("text", { x: margin.left - 10, y: y + 16, "text-anchor": "end", class: "chart-muted" });
+        label.textContent = row.short;
+        svg.appendChild(label);
+        const bar = createSvgElement("rect", {
+          x: x.toFixed(2),
+          y: (y + 4).toFixed(2),
+          width: Math.max(2, len).toFixed(2),
+          height: 14,
+          rx: 0,
+          fill: row.deviation >= 0 ? "var(--good)" : "var(--bad)",
+          class: "bar-segment",
+          "data-idx": row.index
+        });
+        attachInteractiveHandlers(bar, row);
+        svg.appendChild(bar);
+        const value = createSvgElement("text", {
+          x: row.deviation >= 0 ? x + len + 8 : x - 8,
+          y: y + 16,
+          "text-anchor": row.deviation >= 0 ? "start" : "end",
+          class: "chart-muted"
+        });
+        value.textContent = formatSignedPercent(row.deviation);
+        svg.appendChild(value);
+      });
+
+      const axisLabelY = margin.top + sorted.length * rowHeight + 28;
+      const left = createSvgElement("text", { x: margin.left, y: axisLabelY, class: "chart-muted" });
+      left.textContent = "低于人口占比";
+      svg.appendChild(left);
+      const right = createSvgElement("text", { x: margin.left + width, y: axisLabelY, "text-anchor": "end", class: "chart-muted" });
+      right.textContent = "高于人口占比";
+      svg.appendChild(right);
+    }
+
+    function getSortedRows() {
+      const cloned = [...rows];
+      if (sortMode === "comments") return cloned.sort((a, b) => b.comments - a.comments || b.population - a.population);
+      if (sortMode === "population") return cloned.sort((a, b) => b.population - a.population);
+      if (sortMode === "lift") return cloned.sort((a, b) => b.lift - a.lift || b.comments - a.comments);
+      return cloned.sort((a, b) => Math.abs(b.deviation) - Math.abs(a.deviation));
+    }
+
+    function renderLegend() {
+      const list = document.getElementById("legendList");
+      list.innerHTML = "";
+      getSortedRows().forEach((row) => {
+        const item = document.createElement("li");
+        item.className = "legend-row";
+        item.dataset.idx = row.index;
+        item.style.color = row.color;
+        item.innerHTML = `
+          <span class="swatch" style="background:${row.color}"></span>
+          <span class="name" title="${row.name}">${row.name}</span>
+          <span class="legend-number">${numberFormatter.format(row.comments)}<span class="legend-sub">评论</span></span>
+          <span class="legend-number">${formatPercent(row.commentShare, 1)}<span class="legend-sub">样本</span></span>
+          <span class="legend-number">${row.lift.toFixed(2)}x<span class="legend-sub">${formatSignedPercent(row.deviation, 1)}</span></span>
+        `;
+        attachInteractiveHandlers(item, row);
+        list.appendChild(item);
+      });
+    }
+
+    function renderDetail(row) {
+      if (!row) row = rows.find((item) => item.comments > 0) || rows[0];
+      document.getElementById("detailBox").innerHTML = `
+        <div class="detail-title">
+          <span class="swatch" style="background:${row.color}"></span>
+          <span>${row.name}</span>
+        </div>
+        <div class="detail-grid">
+          <div><span>常住人口</span><strong>${formatWan(row.population)}</strong></div>
+          <div><span>评论数</span><strong>${numberFormatter.format(row.comments)}</strong></div>
+          <div><span>代表性倍率</span><strong>${row.lift.toFixed(2)}x</strong></div>
+          <div><span>人口占比</span><strong>${formatPercent(row.populationShare)}</strong></div>
+          <div><span>评论占比</span><strong>${formatPercent(row.commentShare)}</strong></div>
+          <div><span>偏离</span><strong>${formatSignedPercent(row.deviation)}</strong></div>
+        </div>
+      `;
+    }
+
+    function renderMetrics() {
+      const excluded = Number(commentMeta.excluded_or_other || 0);
+      const totalIncludingExcluded = stats.totalComments + excluded;
+      document.getElementById("sampleMetric").textContent = numberFormatter.format(stats.totalComments);
+      document.getElementById("pearsonMetric").textContent = formatCorrelation(stats.pearson);
+      document.getElementById("spearmanMetric").textContent = formatCorrelation(stats.spearman);
+      document.getElementById("topLiftMetric").textContent = stats.topLift ? `${stats.topLift.short} ${stats.topLift.lift.toFixed(2)}x` : "N/A";
+      document.getElementById("sourceTitleMetric").textContent = commentMeta.source_title || "-";
+      document.getElementById("sourceTitleMetric").title = commentMeta.source_title || "";
+      document.getElementById("platformMetric").textContent = commentMeta.platform || "-";
+      document.getElementById("collectedAtMetric").textContent = commentMeta.collected_at || "-";
+      document.getElementById("excludedMetric").textContent = `${numberFormatter.format(excluded)} / 总样本 ${numberFormatter.format(totalIncludingExcluded)}`;
+      document.getElementById("samplingMethodMetric").textContent = commentMeta.sampling_method || "手动 CSV 聚合";
+      document.getElementById("samplingMethodMetric").title = commentMeta.sampling_method || "手动 CSV 聚合";
+      document.getElementById("pearsonCard").textContent = formatCorrelation(stats.pearson);
+      document.getElementById("spearmanCard").textContent = formatCorrelation(stats.spearman);
+      document.getElementById("chiCard").textContent = Number.isFinite(stats.chiSquare) ? stats.chiSquare.toFixed(1) : "N/A";
+      const pText = Number.isFinite(stats.pValue) ? `p=${stats.pValue < 0.001 ? "<0.001" : stats.pValue.toFixed(3)}` : "p=N/A";
+      document.getElementById("chiNote").textContent =
+        stats.totalComments < 300
+          ? "样本少于 300 条，只展示描述统计，不做显著性结论。"
+          : `${pText}，自由度 ${stats.degreesOfFreedom}。用于判断评论分布是否偏离按人口比例的期望分布。`;
+      document.getElementById("scopeCard").textContent = stats.totalComments < 300 ? "低样本量" : "探索性分析";
+    }
+
+    function renderValidation() {
+      const list = document.getElementById("validationList");
+      const currentNames = new Set(commentData.map((item) => normalizeProvince(item.province)).filter(Boolean));
+      const populationShareSum = rows.reduce((sum, row) => sum + row.populationShare, 0);
+      const commentShareSum = rows.reduce((sum, row) => sum + row.commentShare, 0);
+      const items = [
+        { ok: currentNames.size === 31, text: `省份匹配：${currentNames.size}/31 个省级行政区有输入记录。未输入省份会按 0 评论处理。` },
+        { ok: Math.abs(populationShareSum - 100) < 0.02, text: `人口占比合计：${populationShareSum.toFixed(4)}%。` },
+        { ok: stats.totalComments === 0 || Math.abs(commentShareSum - 100) < 0.02, text: `评论占比合计：${commentShareSum.toFixed(4)}%。` },
+        { ok: stats.totalComments >= 300, text: stats.totalComments >= 300 ? "样本量达到 300 条以上，可展示相关性和卡方检验。" : "样本量低于 300 条，仅建议查看描述统计。" },
+        { ok: true, text: "IP属地只代表平台显示的网络访问属地，不等于户籍、省内真实居住人口或真实身份。" }
+      ];
+      list.innerHTML = items.map((item) => `
+        <li><span class="badge ${item.ok ? "" : "warn"}">${item.ok ? "OK" : "注意"}</span><span>${item.text}</span></li>
+      `).join("");
+    }
+
+    function showTooltip(event, row) {
+      tooltip.innerHTML = `
+        <strong>${row.name}</strong>
+        <span>常住人口：${numberFormatter.format(row.population)} 人，占 ${formatPercent(row.populationShare)}</span>
+        <span>评论数：${numberFormatter.format(row.comments)}，占 ${formatPercent(row.commentShare)}</span>
+        <span>偏离：${formatSignedPercent(row.deviation)}；代表性倍率：${row.lift.toFixed(2)}x</span>
+        <span>每百万人评论数：${row.commentsPerMillion.toFixed(2)}</span>
+      `;
+      tooltip.style.left = `${event.clientX}px`;
+      tooltip.style.top = `${event.clientY}px`;
+      tooltip.classList.add("show");
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove("show");
+    }
+
+    function highlight(index) {
+      document.querySelectorAll(".tile, .dot, .bar-segment, .legend-row").forEach((element) => {
+        const active = Number(element.dataset.idx) === index;
+        element.classList.toggle("is-active", active);
+        element.classList.toggle("is-dim", !active);
+      });
+      renderDetail(rows.find((row) => row.index === index));
+    }
+
+    function clearHighlight() {
+      document.querySelectorAll(".tile, .dot, .bar-segment, .legend-row").forEach((element) => {
+        element.classList.remove("is-active", "is-dim");
+      });
+      renderDetail();
+    }
+
+    function readInputsToMeta() {
+      return {
+        source_title: document.getElementById("sourceTitleInput").value.trim(),
+        platform: document.getElementById("platformInput").value.trim(),
+        collected_at: document.getElementById("collectedAtInput").value.trim(),
+        excluded_or_other: Math.max(0, Math.round(Number(document.getElementById("excludedInput").value || 0)))
+      };
+    }
+
+    function writeInputs() {
+      document.getElementById("sourceTitleInput").value = commentMeta.source_title || "";
+      document.getElementById("platformInput").value = commentMeta.platform || "";
+      document.getElementById("collectedAtInput").value = commentMeta.collected_at || "";
+      document.getElementById("excludedInput").value = Number(commentMeta.excluded_or_other || 0);
+      document.getElementById("csvInput").value = toCsv(commentData);
+    }
+
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify({ commentMeta, commentData }));
+    }
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+        if (!saved || !Array.isArray(saved.commentData)) return;
+        commentMeta = { ...defaultMeta, ...(saved.commentMeta || {}) };
+        commentData = saved.commentData.map((item) => ({ province: item.province, comment_count: Number(item.comment_count || 0) }));
+      } catch (error) {
+        localStorage.removeItem(storageKey);
+      }
+    }
+
+    function renderAll() {
+      rows = buildRows();
+      stats = computeStats(rows);
+      renderMetrics();
+      renderDoubleSquare();
+      renderScatter();
+      renderShareChart();
+      renderDeviation();
+      renderLegend();
+      renderDetail(pinnedIndex === null ? undefined : rows.find((row) => row.index === pinnedIndex));
+      renderValidation();
+      window.__dashboardState = { rows, stats, commentMeta, commentData };
+    }
+
+    document.querySelectorAll("[data-sort]").forEach((button) => {
+      button.addEventListener("click", () => {
+        sortMode = button.dataset.sort;
+        document.querySelectorAll("[data-sort]").forEach((entry) => entry.classList.toggle("active", entry === button));
+        renderLegend();
+        if (pinnedIndex !== null) highlight(pinnedIndex);
+      });
+    });
+
+    document.getElementById("applyCsvButton").addEventListener("click", () => {
+      const result = parseCsv(document.getElementById("csvInput").value);
+      commentMeta = readInputsToMeta();
+      commentData = result.parsed;
+      saveState();
+      renderAll();
+      const note = document.getElementById("inputNote");
+      note.textContent = result.errors.length
+        ? `已应用可识别数据；${result.errors.length} 条记录未识别：${result.errors.slice(0, 3).join("；")}`
+        : "已应用 CSV。只保存省份聚合计数，不保存评论级个人信息。";
+    });
+
+    document.getElementById("resetButton").addEventListener("click", () => {
+      commentMeta = { ...defaultMeta };
+      commentData = defaultCommentData.map((item) => ({ ...item }));
+      localStorage.removeItem(storageKey);
+      writeInputs();
+      renderAll();
+      document.getElementById("inputNote").textContent = "已恢复示例数据。";
+    });
+
+    document.getElementById("templateButton").addEventListener("click", () => {
+      document.getElementById("csvInput").value = toCsv(rawData.map((item) => ({ province: item.short, comment_count: 0 })));
+      document.getElementById("inputNote").textContent = "已填入 31 省模板，请把 0 替换为你的聚合评论数。";
+    });
+
+    window.__dashboardTestHooks = {
+      parseCsv,
+      setCommentData(nextData, nextMeta = {}) {
+        commentData = nextData.map((item) => ({ ...item }));
+        commentMeta = { ...commentMeta, ...nextMeta };
+        renderAll();
+      },
+      proportionalComments(total = 3100) {
+        return rawData.map((item) => ({ province: item.short, comment_count: Math.round(total * item.population / populationTotal) }));
+      },
+      singleProvinceComments(shortName = "广东", total = 1000) {
+        return rawData.map((item) => ({ province: item.short, comment_count: item.short === shortName ? total : 0 }));
+      }
+    };
+
+    loadState();
+    writeInputs();
+    renderAll();
+  </script>
+</body>
+</html>

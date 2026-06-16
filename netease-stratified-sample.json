@@ -1,0 +1,232 @@
+{
+  "meta": {
+    "source_title": "网易云音乐9个公开榜单分层抽样：每榜最多24首、每首最多3个评论时间窗口、每窗口80条",
+    "platform": "网易云音乐",
+    "collected_at": "2026/6/16 13:25:30 +08:00",
+    "excluded_or_other": 645,
+    "sampling_method": "榜单分层等额抽样；歌曲去重；单曲限额；评论分页位置按最新/中段/较早三窗口系统抽样；仅保存31省聚合计数。"
+  },
+  "diagnostics": {
+    "strata": [
+      {
+        "name": "综合热度-热歌榜",
+        "list_id": 3778678,
+        "selected_tracks": 24,
+        "requested_windows": 72,
+        "raw_comments": 1920,
+        "matched_mainland": 1899,
+        "excluded_or_other": 21
+      },
+      {
+        "name": "上升趋势-飙升榜",
+        "list_id": 19723756,
+        "selected_tracks": 24,
+        "requested_windows": 70,
+        "raw_comments": 3646,
+        "matched_mainland": 3579,
+        "excluded_or_other": 67
+      },
+      {
+        "name": "新近发行-新歌榜",
+        "list_id": 3779629,
+        "selected_tracks": 24,
+        "requested_windows": 72,
+        "raw_comments": 4320,
+        "matched_mainland": 4237,
+        "excluded_or_other": 83
+      },
+      {
+        "name": "原创音乐-原创榜",
+        "list_id": 2884035,
+        "selected_tracks": 24,
+        "requested_windows": 72,
+        "raw_comments": 4960,
+        "matched_mainland": 4890,
+        "excluded_or_other": 70
+      },
+      {
+        "name": "垂类-古典榜",
+        "list_id": 71384707,
+        "selected_tracks": 24,
+        "requested_windows": 70,
+        "raw_comments": 3678,
+        "matched_mainland": 3520,
+        "excluded_or_other": 158
+      },
+      {
+        "name": "垂类-电音榜",
+        "list_id": 1978921795,
+        "selected_tracks": 24,
+        "requested_windows": 72,
+        "raw_comments": 5200,
+        "matched_mainland": 5129,
+        "excluded_or_other": 71
+      },
+      {
+        "name": "垂类-中文说唱榜",
+        "list_id": 991319590,
+        "selected_tracks": 24,
+        "requested_windows": 72,
+        "raw_comments": 4800,
+        "matched_mainland": 4716,
+        "excluded_or_other": 84
+      },
+      {
+        "name": "新兴内容-AI歌曲榜",
+        "list_id": 9651277674,
+        "selected_tracks": 24,
+        "requested_windows": 72,
+        "raw_comments": 4640,
+        "matched_mainland": 4574,
+        "excluded_or_other": 66
+      },
+      {
+        "name": "垂类-欧美R&B榜",
+        "list_id": 12225155968,
+        "selected_tracks": 24,
+        "requested_windows": 72,
+        "raw_comments": 1920,
+        "matched_mainland": 1895,
+        "excluded_or_other": 25
+      }
+    ],
+    "tracks_per_stratum": 24,
+    "comments_per_window": 80,
+    "temporal_windows": [
+      0,
+      0.33,
+      0.66
+    ],
+    "unique_songs": 216,
+    "raw_comments": 35084,
+    "matched_mainland": 34439,
+    "excluded_or_other": 645,
+    "failed_requests": 0
+  },
+  "commentData": [
+    {
+      "province": "北京",
+      "comment_count": 1240
+    },
+    {
+      "province": "天津",
+      "comment_count": 564
+    },
+    {
+      "province": "河北",
+      "comment_count": 1357
+    },
+    {
+      "province": "山西",
+      "comment_count": 590
+    },
+    {
+      "province": "内蒙古",
+      "comment_count": 350
+    },
+    {
+      "province": "辽宁",
+      "comment_count": 851
+    },
+    {
+      "province": "吉林",
+      "comment_count": 432
+    },
+    {
+      "province": "黑龙江",
+      "comment_count": 540
+    },
+    {
+      "province": "上海",
+      "comment_count": 1302
+    },
+    {
+      "province": "江苏",
+      "comment_count": 2574
+    },
+    {
+      "province": "浙江",
+      "comment_count": 2146
+    },
+    {
+      "province": "安徽",
+      "comment_count": 1281
+    },
+    {
+      "province": "福建",
+      "comment_count": 1263
+    },
+    {
+      "province": "江西",
+      "comment_count": 946
+    },
+    {
+      "province": "山东",
+      "comment_count": 2201
+    },
+    {
+      "province": "河南",
+      "comment_count": 1958
+    },
+    {
+      "province": "湖北",
+      "comment_count": 1249
+    },
+    {
+      "province": "湖南",
+      "comment_count": 1350
+    },
+    {
+      "province": "广东",
+      "comment_count": 4871
+    },
+    {
+      "province": "广西",
+      "comment_count": 1011
+    },
+    {
+      "province": "海南",
+      "comment_count": 261
+    },
+    {
+      "province": "重庆",
+      "comment_count": 797
+    },
+    {
+      "province": "四川",
+      "comment_count": 1766
+    },
+    {
+      "province": "贵州",
+      "comment_count": 558
+    },
+    {
+      "province": "云南",
+      "comment_count": 836
+    },
+    {
+      "province": "西藏",
+      "comment_count": 29
+    },
+    {
+      "province": "陕西",
+      "comment_count": 933
+    },
+    {
+      "province": "甘肃",
+      "comment_count": 324
+    },
+    {
+      "province": "青海",
+      "comment_count": 87
+    },
+    {
+      "province": "宁夏",
+      "comment_count": 140
+    },
+    {
+      "province": "新疆",
+      "comment_count": 632
+    }
+  ]
+}
