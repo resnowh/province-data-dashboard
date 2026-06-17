@@ -444,7 +444,21 @@
       gap: 10px;
     }
 
-    .overview-card {
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .narrative-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .overview-card,
+    .narrative-card {
       min-height: 154px;
       padding: 13px;
       background: rgba(9, 12, 13, .38);
@@ -455,6 +469,26 @@
     .overview-card h3 {
       color: #fff6d9;
       font-size: 16px;
+    }
+
+    .narrative-card {
+      min-height: 120px;
+    }
+
+    .narrative-card strong {
+      display: block;
+      margin-top: 8px;
+      color: #fff6d9;
+      font-size: 20px;
+      line-height: 1.12;
+      font-weight: 900;
+    }
+
+    .narrative-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
     }
 
     .overview-card .score-row {
@@ -525,6 +559,75 @@
       color: var(--muted);
       background: rgba(24, 31, 32, .98);
       font-weight: 800;
+    }
+
+    .analysis-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .analysis-list li {
+      display: grid;
+      grid-template-columns: minmax(86px, .45fr) minmax(0, 1fr);
+      gap: 10px;
+      padding: 9px 0;
+      border-top: 1px solid rgba(255, 255, 255, .07);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .analysis-list li:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .analysis-list strong {
+      color: #fff6d9;
+      font-size: 13px;
+    }
+
+    .coef-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    .coef-row {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr) 58px;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .coef-track {
+      position: relative;
+      height: 16px;
+      background: rgba(0, 0, 0, .24);
+      border: 1px solid rgba(255, 255, 255, .07);
+    }
+
+    .coef-track::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      bottom: -2px;
+      left: 50%;
+      border-left: 1px solid rgba(255, 246, 217, .45);
+    }
+
+    .coef-bar {
+      position: absolute;
+      top: 2px;
+      height: 10px;
+      background: var(--good);
+    }
+
+    .coef-bar.negative {
+      background: var(--bad);
     }
 
     .indicator-layout {
@@ -893,6 +996,8 @@
       .stat-grid,
       .detail-grid,
       .overview-grid,
+      .analysis-grid,
+      .narrative-grid,
       .overview-card .score-row,
       .indicator-summary-grid {
         grid-template-columns: 1fr;
@@ -979,14 +1084,15 @@
     </section>
 
     <nav class="view-tabs" aria-label="研究视图切换">
-      <button class="view-tab active" type="button" data-view="baseline">评论偏离</button>
-      <button class="view-tab" type="button" data-view="overview">综合总览</button>
+      <button class="view-tab active" type="button" data-view="overview">综合总览</button>
+      <button class="view-tab" type="button" data-view="baseline">评论偏离</button>
       <button class="view-tab" type="button" data-view="urbanization">城镇化率</button>
       <button class="view-tab" type="button" data-view="gdp">人均GDP</button>
       <button class="view-tab" type="button" data-view="inflow">净流入率</button>
+      <button class="view-tab" type="button" data-view="methods">数据与方法</button>
     </nav>
 
-    <main class="layout dashboard-view" id="baselineView">
+    <main class="layout dashboard-view" id="baselineView" hidden>
       <section class="panel chart-panel" aria-labelledby="squareTitle">
         <div class="panel-head">
           <div class="panel-title">
@@ -1088,95 +1194,70 @@
         </div>
       </section>
 
-      <section class="panel" aria-labelledby="inputTitle">
-        <div class="panel-head">
-          <div class="panel-title">
-            <h2 id="inputTitle">评论属地数据</h2>
-            <span class="panel-kicker">粘贴 CSV 聚合表</span>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="form-grid">
-            <label>
-              目标内容
-              <input id="sourceTitleInput" type="text">
-            </label>
-            <label>
-              平台
-              <input id="platformInput" type="text">
-            </label>
-            <label>
-              采样时间
-              <input id="collectedAtInput" type="text">
-            </label>
-            <label>
-              排除项数量
-              <input id="excludedInput" type="number" min="0" step="1">
-            </label>
-          </div>
-          <label>
-            CSV 格式：province,comment_count
-            <textarea id="csvInput" spellcheck="false"></textarea>
-          </label>
-          <div class="action-row">
-            <button class="action-button primary" type="button" id="applyCsvButton">应用 CSV</button>
-            <button class="action-button" type="button" id="resetButton">恢复示例数据</button>
-            <button class="action-button" type="button" id="templateButton">填入模板</button>
-          </div>
-          <p class="note small" id="inputNote">
-            “未知、海外、港澳台、无属地”等不进入 31 省相关性计算，请把数量填入排除项。
-          </p>
-        </div>
-      </section>
-
-      <section class="panel" aria-labelledby="samplingTitle">
-        <div class="panel-head">
-          <div class="panel-title">
-            <h2 id="samplingTitle">低偏差抽样设计</h2>
-            <span class="panel-kicker">扩大样本后的默认口径</span>
-          </div>
-        </div>
-        <div class="panel-body">
-          <ul class="research-list">
-            <li>内容分层<span>从热歌、飙升、新歌、原创、古典、电音、中文说唱、AI歌曲、欧美R&amp;B 9 个公开榜单采样，避免单一热歌榜支配结果。</span></li>
-            <li>等额限额<span>每个榜单最多 24 首歌，歌曲去重；每首歌设评论数上限，避免一个爆款评论区压过其他内容。</span></li>
-            <li>时间窗口<span>每首歌按评论分页位置抽取最新、中段、较早 3 个窗口，降低只看最新评论造成的时间偏差。</span></li>
-            <li>最小化保存<span>采集阶段只读取公开 IP属地省份并立即聚合；不保存用户名、主页、头像、评论原文、真实 IP 或评论级记录。</span></li>
-            <li>剩余边界<span>样本仍是网易云音乐平台内样本，不代表全网；音乐平台用户结构、榜单受众、评论意愿仍会带来系统性偏差。</span></li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="panel" aria-labelledby="researchTitle">
-        <div class="panel-head">
-          <div class="panel-title">
-            <h2 id="researchTitle">后续研究目标</h2>
-            <span class="panel-kicker">可扩展方向</span>
-          </div>
-        </div>
-        <div class="panel-body">
-          <ul class="research-list">
-            <li>代表性偏差<span>识别哪些省份在该评论样本中过度或不足代表。</span></li>
-            <li>平台/内容偏差<span>同一主题跨平台对比，或同平台不同内容类型对比。</span></li>
-            <li>主题地域性<span>本地新闻、全国新闻、娱乐内容的省份偏离模式是否不同。</span></li>
-            <li>时间变化<span>比较发布后 1 小时、6 小时、24 小时的属地结构变化。</span></li>
-            <li>情绪扩展<span>在严格脱敏下研究省份层面的情绪或主题差异。</span></li>
-            <li>省级解释变量<span>加入人均 GDP、互联网普及率、年龄结构，解释人口之外的评论量差异。</span></li>
-          </ul>
-        </div>
-      </section>
     </main>
 
-    <main class="stack dashboard-view" id="overviewView" hidden>
+    <main class="stack dashboard-view" id="overviewView">
+      <section class="panel" aria-labelledby="narrativeTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="narrativeTitle">结果摘要</h2>
+            <span class="panel-kicker">当前评论样本的自动解读</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="narrative-grid" id="narrativeCards"></div>
+          <ul class="analysis-list" id="narrativeList"></ul>
+        </div>
+      </section>
+
       <section class="panel" aria-labelledby="overviewTitle">
         <div class="panel-head">
           <div class="panel-title">
-            <h2 id="overviewTitle">综合总览</h2>
+            <h2 id="overviewTitle">单变量关联</h2>
             <span class="panel-kicker">解释变量与相对偏离率</span>
           </div>
         </div>
         <div class="panel-body">
           <div class="overview-grid" id="overviewCards"></div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="modelTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="modelTitle">综合模型</h2>
+            <span class="panel-kicker">三变量标准化 OLS</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="analysis-grid">
+            <div>
+              <ul class="analysis-list" id="modelSummary"></ul>
+              <div class="coef-list" id="modelCoefficients"></div>
+            </div>
+            <div class="overview-table-wrap">
+              <table class="data-table" id="residualTable"></table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="outlierTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="outlierTitle">异常与分组分析</h2>
+            <span class="panel-kicker">偏离省份和省级变量分组</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="analysis-grid">
+            <div class="overview-table-wrap">
+              <table class="data-table" id="outlierTable"></table>
+            </div>
+            <div class="overview-table-wrap">
+              <table class="data-table" id="groupTable"></table>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1263,6 +1344,103 @@
           </div>
         </div>
         <div class="panel-body source-note" id="indicatorSourceNote"></div>
+      </section>
+    </main>
+
+    <main class="layout dashboard-view" id="methodsView" hidden>
+      <section class="panel" aria-labelledby="inputTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="inputTitle">评论属地数据</h2>
+            <span class="panel-kicker">粘贴 CSV 聚合表</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <label>
+              目标内容
+              <input id="sourceTitleInput" type="text">
+            </label>
+            <label>
+              平台
+              <input id="platformInput" type="text">
+            </label>
+            <label>
+              采样时间
+              <input id="collectedAtInput" type="text">
+            </label>
+            <label>
+              排除项数量
+              <input id="excludedInput" type="number" min="0" step="1">
+            </label>
+          </div>
+          <label>
+            CSV 格式：province,comment_count
+            <textarea id="csvInput" spellcheck="false"></textarea>
+          </label>
+          <div class="action-row">
+            <button class="action-button primary" type="button" id="applyCsvButton">应用 CSV</button>
+            <button class="action-button" type="button" id="resetButton">恢复示例数据</button>
+            <button class="action-button" type="button" id="templateButton">填入模板</button>
+          </div>
+          <p class="note small" id="inputNote">
+            “未知、海外、港澳台、无属地”等不进入 31 省相关性计算，请把数量填入排除项。页面只保存和计算省份聚合计数。
+          </p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="sourceBoundaryTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="sourceBoundaryTitle">数据来源与边界</h2>
+            <span class="panel-kicker">公开聚合数据</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <ul class="research-list">
+            <li>评论样本<span>只读取平台公开展示的 IP属地省份并立即聚合，不保存评论原文、用户名、主页、头像或真实 IP。</span></li>
+            <li>人口基准<span>31 个大陆省级行政区使用第七次全国人口普查常住人口，港澳台、海外、未知属地不进入相关性计算。</span></li>
+            <li>解释变量<span>城镇化率和人均GDP使用国家统计年鉴公开表；净流入率由 2020 常住人口与 2020 年末户籍人口计算。</span></li>
+            <li>解释边界<span>所有结论只描述当前评论样本中 IP属地分布与省级公开统计变量的关系，不构成因果推断。</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="samplingTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="samplingTitle">低偏差抽样设计</h2>
+            <span class="panel-kicker">扩大样本后的默认口径</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <ul class="research-list">
+            <li>内容分层<span>从热歌、飙升、新歌、原创、古典、电音、中文说唱、AI歌曲、欧美R&amp;B 9 个公开榜单采样，避免单一热歌榜支配结果。</span></li>
+            <li>等额限额<span>每个榜单最多 24 首歌，歌曲去重；每首歌设评论数上限，避免一个爆款评论区压过其他内容。</span></li>
+            <li>时间窗口<span>每首歌按评论分页位置抽取最新、中段、较早 3 个窗口，降低只看最新评论造成的时间偏差。</span></li>
+            <li>最小化保存<span>采集阶段只读取公开 IP属地省份并立即聚合；不保存用户名、主页、头像、评论原文、真实 IP 或评论级记录。</span></li>
+            <li>剩余边界<span>样本仍是网易云音乐平台内样本，不代表全网；音乐平台用户结构、榜单受众、评论意愿仍会带来系统性偏差。</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="researchTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="researchTitle">后续研究目标</h2>
+            <span class="panel-kicker">可扩展方向</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <ul class="research-list">
+            <li>代表性偏差<span>识别哪些省份在该评论样本中过度或不足代表。</span></li>
+            <li>平台/内容偏差<span>同一主题跨平台对比，或同平台不同内容类型对比。</span></li>
+            <li>主题地域性<span>本地新闻、全国新闻、娱乐内容的省份偏离模式是否不同。</span></li>
+            <li>时间变化<span>比较发布后 1 小时、6 小时、24 小时的属地结构变化。</span></li>
+            <li>情绪扩展<span>在严格脱敏下研究省份层面的情绪或主题差异。</span></li>
+            <li>变量扩展<span>继续加入互联网普及率、年龄结构、教育结构等省级变量，并和当前模型对比。</span></li>
+          </ul>
+        </div>
       </section>
     </main>
   </div>
@@ -1434,9 +1612,12 @@
     let rows = [];
     let stats = {};
     let indicatorStats = {};
+    let modelStats = {};
+    let groupedAnalysis = {};
+    let analysisNarrative = {};
     let pinnedIndex = null;
     let sortMode = "deviation";
-    let activeView = "baseline";
+    let activeView = "overview";
 
     rawData.forEach((item) => {
       const aliases = new Set([
@@ -1702,6 +1883,175 @@
         };
       });
       return result;
+    }
+
+    function meanAndSd(values) {
+      const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+      const variance = values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length;
+      return { mean, sd: Math.sqrt(variance) };
+    }
+
+    function solveLinearSystem(matrix, vector) {
+      const n = vector.length;
+      const augmented = matrix.map((row, i) => [...row, vector[i]]);
+      for (let col = 0; col < n; col += 1) {
+        let pivot = col;
+        for (let row = col + 1; row < n; row += 1) {
+          if (Math.abs(augmented[row][col]) > Math.abs(augmented[pivot][col])) pivot = row;
+        }
+        if (Math.abs(augmented[pivot][col]) < 1e-10) return null;
+        if (pivot !== col) [augmented[pivot], augmented[col]] = [augmented[col], augmented[pivot]];
+        const divisor = augmented[col][col];
+        for (let j = col; j <= n; j += 1) augmented[col][j] /= divisor;
+        for (let row = 0; row < n; row += 1) {
+          if (row === col) continue;
+          const factor = augmented[row][col];
+          for (let j = col; j <= n; j += 1) augmented[row][j] -= factor * augmented[col][j];
+        }
+      }
+      return augmented.map((row) => row[n]);
+    }
+
+    function computeMultivariateModel(currentRows) {
+      const variables = Object.entries(indicatorDefinitions).map(([id, definition]) => ({ id, definition }));
+      const points = currentRows.filter((row) =>
+        Number.isFinite(row.relativeDeviation) &&
+        variables.every((entry) => Number.isFinite(row[entry.definition.key]))
+      );
+      const yValues = points.map((row) => row.relativeDeviation * 100);
+      if (points.length < variables.length + 2) return { valid: false, reason: "样本省份不足，无法拟合综合模型。" };
+      const yStats = meanAndSd(yValues);
+      if (yStats.sd < 1e-10) return { valid: false, reason: "相对偏离率没有方差，综合模型不适用。" };
+
+      const variableStats = variables.map((entry) => {
+        const values = points.map((row) => row[entry.definition.key]);
+        return { ...entry, ...meanAndSd(values) };
+      });
+      if (variableStats.some((entry) => entry.sd < 1e-10)) return { valid: false, reason: "至少一个解释变量没有方差，综合模型不适用。" };
+
+      const xRows = points.map((row) => [
+        1,
+        ...variableStats.map((entry) => (row[entry.definition.key] - entry.mean) / entry.sd)
+      ]);
+      const yStandard = yValues.map((value) => (value - yStats.mean) / yStats.sd);
+      const size = variables.length + 1;
+      const xtx = Array.from({ length: size }, () => Array(size).fill(0));
+      const xty = Array(size).fill(0);
+      xRows.forEach((xRow, i) => {
+        for (let r = 0; r < size; r += 1) {
+          xty[r] += xRow[r] * yStandard[i];
+          for (let c = 0; c < size; c += 1) xtx[r][c] += xRow[r] * xRow[c];
+        }
+      });
+      const beta = solveLinearSystem(xtx, xty);
+      if (!beta) return { valid: false, reason: "解释变量存在强共线性，综合模型无法稳定求解。" };
+
+      const fitted = points.map((row, i) => {
+        const predictedStandard = xRows[i].reduce((sum, value, j) => sum + value * beta[j], 0);
+        const predicted = yStats.mean + predictedStandard * yStats.sd;
+        const actual = yValues[i];
+        return {
+          ...row,
+          actualRelativePercent: actual,
+          predictedRelativePercent: predicted,
+          residualPercent: actual - predicted,
+          residualStandard: yStandard[i] - predictedStandard
+        };
+      });
+      const sse = fitted.reduce((sum, row) => sum + row.residualStandard ** 2, 0);
+      const sst = yStandard.reduce((sum, value) => sum + value ** 2, 0);
+      const coefficients = variableStats.map((entry, i) => ({
+        id: entry.id,
+        label: entry.definition.label,
+        beta: beta[i + 1]
+      }));
+      return {
+        valid: true,
+        rSquared: sst > 0 ? Math.max(0, 1 - sse / sst) : NaN,
+        intercept: beta[0],
+        coefficients,
+        fitted,
+        yMean: yStats.mean,
+        ySd: yStats.sd
+      };
+    }
+
+    function computeResidualOutliers(currentRows, model) {
+      if (model && model.valid) {
+        return [...model.fitted].sort((a, b) => Math.abs(b.residualPercent) - Math.abs(a.residualPercent)).slice(0, 8);
+      }
+      return [...currentRows]
+        .map((row) => ({ ...row, actualRelativePercent: row.relativeDeviation * 100, predictedRelativePercent: NaN, residualPercent: row.relativeDeviation * 100 }))
+        .sort((a, b) => Math.abs(b.residualPercent) - Math.abs(a.residualPercent))
+        .slice(0, 8);
+    }
+
+    function computeGroupedAnalysis(currentRows) {
+      const median = (values) => {
+        const sorted = [...values].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+      };
+      const summarize = (label, rowsInGroup, criterion) => ({
+        label,
+        criterion,
+        count: rowsInGroup.length,
+        averageRelativePercent: rowsInGroup.length
+          ? rowsInGroup.reduce((sum, row) => sum + row.relativeDeviation * 100, 0) / rowsInGroup.length
+          : NaN
+      });
+      const urbanMedian = median(currentRows.map((row) => row.urbanizationRate));
+      const gdpMedian = median(currentRows.map((row) => row.gdpPerCapita));
+      return {
+        urbanMedian,
+        gdpMedian,
+        groups: [
+          summarize("高城镇化", currentRows.filter((row) => row.urbanizationRate >= urbanMedian), `城镇化率 >= ${urbanMedian.toFixed(1)}%`),
+          summarize("低城镇化", currentRows.filter((row) => row.urbanizationRate < urbanMedian), `城镇化率 < ${urbanMedian.toFixed(1)}%`),
+          summarize("高人均GDP", currentRows.filter((row) => row.gdpPerCapita >= gdpMedian), `人均GDP >= ${numberFormatter.format(Math.round(gdpMedian))}元`),
+          summarize("低人均GDP", currentRows.filter((row) => row.gdpPerCapita < gdpMedian), `人均GDP < ${numberFormatter.format(Math.round(gdpMedian))}元`),
+          summarize("净流入", currentRows.filter((row) => row.netInflowShare > 0), "净流入率 > 0"),
+          summarize("净流出", currentRows.filter((row) => row.netInflowShare <= 0), "净流入率 <= 0")
+        ]
+      };
+    }
+
+    function describeCorrelation(value) {
+      if (!Number.isFinite(value)) return "无法计算";
+      const abs = Math.abs(value);
+      if (abs >= 0.65) return value > 0 ? "强正相关" : "强负相关";
+      if (abs >= 0.35) return value > 0 ? "中等正相关" : "中等负相关";
+      if (abs >= 0.15) return value > 0 ? "弱正相关" : "弱负相关";
+      return "相关较弱";
+    }
+
+    function formatSignedPlainPercent(value, digits = 1) {
+      if (!Number.isFinite(value)) return "N/A";
+      return `${value >= 0 ? "+" : ""}${value.toFixed(Math.abs(value) >= 100 ? 0 : digits)}%`;
+    }
+
+    function computeNarrative(currentRows, currentStats, currentIndicatorStats, model) {
+      const over = [...currentRows].sort((a, b) => b.relativeDeviation - a.relativeDeviation)[0];
+      const under = [...currentRows].sort((a, b) => a.relativeDeviation - b.relativeDeviation)[0];
+      const strongest = Object.values(currentIndicatorStats)
+        .filter((item) => Number.isFinite(item.pearson))
+        .sort((a, b) => Math.abs(b.pearson) - Math.abs(a.pearson))[0];
+      const sampleText = `${numberFormatter.format(currentStats.totalComments)} 条`;
+      const lowSample = currentStats.totalComments < 300;
+      const modelText = model && model.valid ? `综合模型 R²=${model.rSquared.toFixed(3)}` : "综合模型 N/A";
+      return {
+        cards: [
+          { label: "样本规模", value: sampleText, text: lowSample ? "样本低于 300 条，只展示描述统计。" : "样本达到相关性和拟合检验的展示门槛。" },
+          { label: "人口相关", value: formatCorrelation(currentStats.pearson), text: `人口数量与评论量呈${describeCorrelation(currentStats.pearson)}。` },
+          { label: "最强变量", value: strongest ? strongest.definition.shortLabel : "N/A", text: strongest ? `与相对偏离率 Pearson=${formatCorrelation(strongest.pearson)}，${describeCorrelation(strongest.pearson)}。` : "解释变量相关性无法计算。" },
+          { label: "综合解释", value: modelText, text: model && model.valid ? "三变量标准化模型用于筛选异常残差省份。" : (model?.reason || "综合模型无法计算。") }
+        ],
+        findings: [
+          { title: "过度代表", text: over ? `${over.name}的评论占比相对人口占比最高，当前相对偏离为 ${formatRelativeDeviation(over.relativeDeviation)}。` : "暂无可计算省份。" },
+          { title: "不足代表", text: under ? `${under.name}的评论占比相对人口占比最低，当前相对偏离为 ${formatRelativeDeviation(under.relativeDeviation)}。` : "暂无可计算省份。" },
+          { title: "解释边界", text: lowSample ? "样本量较低，所有结论都应视为描述统计。" : "所有结果只描述当前评论样本中的 IP属地分布，不外推为全网用户结构，也不构成因果解释。" }
+        ]
+      };
     }
 
     function formatIndicatorValue(definition, value, digits = 1) {
@@ -2215,7 +2565,137 @@
       `).join("");
     }
 
+    function renderNarrative() {
+      const cardBox = document.getElementById("narrativeCards");
+      const list = document.getElementById("narrativeList");
+      cardBox.innerHTML = (analysisNarrative.cards || []).map((card) => `
+        <article class="narrative-card">
+          <span>${card.label}</span>
+          <strong>${card.value}</strong>
+          <p>${card.text}</p>
+        </article>
+      `).join("");
+      list.innerHTML = (analysisNarrative.findings || []).map((item) => `
+        <li><strong>${item.title}</strong><span>${item.text}</span></li>
+      `).join("");
+    }
+
+    function renderModelAnalysis() {
+      const summary = document.getElementById("modelSummary");
+      const coefficients = document.getElementById("modelCoefficients");
+      const residualTable = document.getElementById("residualTable");
+      if (!modelStats.valid) {
+        summary.innerHTML = `
+          <li><strong>模型状态</strong><span>${modelStats.reason || "综合模型无法计算。"}</span></li>
+          <li><strong>解释边界</strong><span>保留单变量相关性和偏离图，不输出综合模型结论。</span></li>
+        `;
+        coefficients.innerHTML = "";
+      } else {
+        const strongest = [...modelStats.coefficients].sort((a, b) => Math.abs(b.beta) - Math.abs(a.beta))[0];
+        summary.innerHTML = `
+          <li><strong>模型 R²</strong><span>${modelStats.rSquared.toFixed(3)}。这表示三项省级变量对当前样本相对偏离率的线性解释度。</span></li>
+          <li><strong>最强变量</strong><span>${strongest.label} 的标准化系数为 ${strongest.beta.toFixed(3)}，方向为${strongest.beta >= 0 ? "正" : "负"}。</span></li>
+          <li><strong>解释边界</strong><span>该模型是 31 省横截面的探索性相关，不做因果断言。</span></li>
+        `;
+        const maxAbs = Math.max(0.1, ...modelStats.coefficients.map((item) => Math.abs(item.beta)));
+        coefficients.innerHTML = modelStats.coefficients.map((item) => {
+          const width = Math.max(2, Math.abs(item.beta) / maxAbs * 50);
+          const left = item.beta >= 0 ? 50 : 50 - width;
+          return `
+            <div class="coef-row">
+              <span>${item.label}</span>
+              <span class="coef-track"><span class="coef-bar ${item.beta < 0 ? "negative" : ""}" style="left:${left}%;width:${width}%"></span></span>
+              <strong>${item.beta.toFixed(3)}</strong>
+            </div>
+          `;
+        }).join("");
+      }
+      const residualRows = computeResidualOutliers(rows, modelStats);
+      residualTable.innerHTML = `
+        <thead>
+          <tr>
+            <th>残差省份</th>
+            <th>实际偏离</th>
+            <th>模型预测</th>
+            <th>残差</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${residualRows.map((row) => `
+            <tr class="overview-row" data-idx="${row.index}">
+              <td>${row.short}</td>
+              <td>${formatSignedPlainPercent(row.actualRelativePercent)}</td>
+              <td>${formatSignedPlainPercent(row.predictedRelativePercent)}</td>
+              <td>${formatSignedPlainPercent(row.residualPercent)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+      residualTable.querySelectorAll(".overview-row").forEach((rowElement) => {
+        const row = rows.find((item) => item.index === Number(rowElement.dataset.idx));
+        attachInteractiveHandlers(rowElement, row);
+      });
+    }
+
+    function renderOutlierAnalysis() {
+      const outlierTable = document.getElementById("outlierTable");
+      const groupTable = document.getElementById("groupTable");
+      const topOver = [...rows].sort((a, b) => b.relativeDeviation - a.relativeDeviation).slice(0, 5);
+      const topUnder = [...rows].sort((a, b) => a.relativeDeviation - b.relativeDeviation).slice(0, 5);
+      const outlierRows = [
+        ...topOver.map((row) => ({ row, type: "正偏离" })),
+        ...topUnder.map((row) => ({ row, type: "负偏离" }))
+      ];
+      outlierTable.innerHTML = `
+        <thead>
+          <tr>
+            <th>类型</th>
+            <th>省份</th>
+            <th>相对偏离</th>
+            <th>代表性</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${outlierRows.map((item) => `
+            <tr class="overview-row" data-idx="${item.row.index}">
+              <td>${item.type}</td>
+              <td>${item.row.short}</td>
+              <td>${formatRelativeDeviation(item.row.relativeDeviation)}</td>
+              <td>${item.row.lift.toFixed(2)}x</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+      outlierTable.querySelectorAll(".overview-row").forEach((rowElement) => {
+        const row = rows.find((item) => item.index === Number(rowElement.dataset.idx));
+        attachInteractiveHandlers(rowElement, row);
+      });
+      groupTable.innerHTML = `
+        <thead>
+          <tr>
+            <th>分组</th>
+            <th>条件</th>
+            <th>省份数</th>
+            <th>平均相对偏离</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${groupedAnalysis.groups.map((group) => `
+            <tr>
+              <td>${group.label}</td>
+              <td>${group.criterion}</td>
+              <td>${group.count}</td>
+              <td>${formatSignedPlainPercent(group.averageRelativePercent)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+    }
+
     function renderOverview() {
+      renderNarrative();
+      renderModelAnalysis();
+      renderOutlierAnalysis();
       const cards = document.getElementById("overviewCards");
       cards.innerHTML = Object.entries(indicatorDefinitions).map(([id, definition]) => {
         const item = indicatorStats[id];
@@ -2660,6 +3140,9 @@
       rows = buildRows();
       stats = computeStats(rows);
       indicatorStats = computeIndicatorStats(rows);
+      modelStats = computeMultivariateModel(rows);
+      groupedAnalysis = computeGroupedAnalysis(rows);
+      analysisNarrative = computeNarrative(rows, stats, indicatorStats, modelStats);
       renderMetrics();
       renderDoubleSquare();
       renderScatter();
@@ -2671,7 +3154,7 @@
       renderOverview();
       renderIndicatorView(getIndicatorViewKey());
       if (pinnedIndex !== null) highlight(pinnedIndex);
-      window.__dashboardState = { rows, stats, indicatorStats, commentMeta, commentData, provinceIndicators, activeView };
+      window.__dashboardState = { rows, stats, indicatorStats, modelStats, groupedAnalysis, analysisNarrative, commentMeta, commentData, provinceIndicators, activeView };
     }
 
     function switchView(view) {
@@ -2682,6 +3165,7 @@
       document.getElementById("baselineView").hidden = view !== "baseline";
       document.getElementById("overviewView").hidden = view !== "overview";
       document.getElementById("indicatorView").hidden = !indicatorDefinitions[view];
+      document.getElementById("methodsView").hidden = view !== "methods";
       if (indicatorDefinitions[view]) renderIndicatorView(view);
       if (pinnedIndex !== null) highlight(pinnedIndex);
     }
